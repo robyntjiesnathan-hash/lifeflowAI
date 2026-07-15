@@ -6,6 +6,7 @@ import '../../features/auth/presentation/screens/auth_welcome_screen.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/sign_in_screen.dart';
 import '../../features/auth/presentation/screens/sign_up_screen.dart';
+import '../../features/ai_coach/presentation/screens/ai_coach_screen.dart';
 import '../../features/budget/presentation/screens/bills_screen.dart';
 import '../../features/budget/presentation/screens/budget_screen.dart';
 import '../../features/goals/presentation/screens/goal_detail_screen.dart';
@@ -13,10 +14,18 @@ import '../../features/goals/presentation/screens/goals_screen.dart';
 import '../../features/habits/presentation/screens/habit_detail_screen.dart';
 import '../../features/habits/presentation/screens/habits_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
+import '../../features/meals/presentation/screens/meal_planner_screen.dart';
+import '../../features/meals/presentation/screens/recipe_detail_screen.dart';
+import '../../features/meals/presentation/screens/shopping_list_screen.dart';
 import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../features/planner/presentation/screens/planner_screen.dart';
 import '../../features/planner/presentation/screens/task_detail_screen.dart';
+import '../../features/premium/presentation/screens/premium_screen.dart';
 import '../../features/profile/application/user_profile_providers.dart';
+import '../../features/profile/presentation/screens/account_screen.dart';
+import '../../features/profile/presentation/screens/notifications_settings_screen.dart';
+import '../../features/profile/presentation/screens/profile_edit_screen.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/reminders/presentation/screens/reminders_screen.dart';
 import '../../features/shell/presentation/screens/shell_scaffold.dart';
 import '../../features/shell/presentation/screens/splash_screen.dart';
@@ -100,17 +109,18 @@ GoRouter goRouter(Ref ref) {
             ),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(path: RoutePaths.profile, builder: (context, state) => const PlaceholderScreen(title: 'Profile')),
+            GoRoute(path: RoutePaths.profile, builder: (context, state) => const ProfileScreen()),
           ]),
         ],
       ),
       GoRoute(
         path: RoutePaths.coach,
-        builder: (context, state) => const PlaceholderScreen(title: 'AI Coach'),
+        builder: (context, state) => const AiCoachScreen(),
         routes: [
           GoRoute(
             path: ':conversationId',
-            builder: (context, state) => const PlaceholderScreen(title: 'AI Coach'),
+            builder: (context, state) =>
+                AiCoachScreen(conversationId: state.pathParameters['conversationId']),
           ),
         ],
       ),
@@ -126,10 +136,13 @@ GoRouter goRouter(Ref ref) {
       ),
       GoRoute(
         path: RoutePaths.meals,
-        builder: (context, state) => const PlaceholderScreen(title: 'Meal Planner'),
+        builder: (context, state) => const MealPlannerScreen(),
         routes: [
-          GoRoute(path: 'recipe/:recipeId', builder: (context, state) => const PlaceholderScreen(title: 'Recipe')),
-          GoRoute(path: 'shopping-list', builder: (context, state) => const PlaceholderScreen(title: 'Shopping List')),
+          GoRoute(
+            path: 'recipe/:recipeId',
+            builder: (context, state) => RecipeDetailScreen(recipeId: state.pathParameters['recipeId']!),
+          ),
+          GoRoute(path: 'shopping-list', builder: (context, state) => const ShoppingListScreen()),
         ],
       ),
       GoRoute(
@@ -143,11 +156,11 @@ GoRouter goRouter(Ref ref) {
       GoRoute(path: RoutePaths.reminders, builder: (context, state) => const RemindersScreen()),
       GoRoute(
         path: RoutePaths.notificationsSettings,
-        builder: (context, state) => const PlaceholderScreen(title: 'Notification Settings'),
+        builder: (context, state) => const NotificationsSettingsScreen(),
       ),
-      GoRoute(path: RoutePaths.premium, builder: (context, state) => const PlaceholderScreen(title: 'Premium')),
-      GoRoute(path: RoutePaths.profileEdit, builder: (context, state) => const PlaceholderScreen(title: 'Edit Profile')),
-      GoRoute(path: RoutePaths.profileAccount, builder: (context, state) => const PlaceholderScreen(title: 'Account')),
+      GoRoute(path: RoutePaths.premium, builder: (context, state) => const PremiumScreen()),
+      GoRoute(path: RoutePaths.profileEdit, builder: (context, state) => const ProfileEditScreen()),
+      GoRoute(path: RoutePaths.profileAccount, builder: (context, state) => const AccountScreen()),
     ],
   );
 }
