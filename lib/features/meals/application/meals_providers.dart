@@ -52,7 +52,7 @@ Stream<List<ShoppingListItem>> shoppingList(Ref ref) {
   return ref.watch(mealsRepositoryProvider).watchShoppingList(uid);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class MealsController extends _$MealsController {
   @override
   FutureOr<void> build() {}

@@ -26,7 +26,7 @@ Stream<List<Reminder>> reminders(Ref ref) {
   return ref.watch(remindersRepositoryProvider).watchReminders(uid);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class RemindersController extends _$RemindersController {
   @override
   FutureOr<void> build() {}

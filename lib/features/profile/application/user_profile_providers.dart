@@ -31,7 +31,7 @@ Stream<UserProfile?> currentUserProfile(Ref ref) {
   return repo.watchProfile(user.uid);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class UserProfileController extends _$UserProfileController {
   @override
   FutureOr<void> build() {}

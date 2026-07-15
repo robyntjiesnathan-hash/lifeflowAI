@@ -15,7 +15,7 @@ class OnboardingDraftNotifier extends _$OnboardingDraftNotifier {
   void update(OnboardingDraft Function(OnboardingDraft) updater) => state = updater(state);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class OnboardingController extends _$OnboardingController {
   @override
   FutureOr<void> build() {}

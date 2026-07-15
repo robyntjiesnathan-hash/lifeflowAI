@@ -107,7 +107,7 @@ final class RemindersControllerProvider
         argument: null,
         retry: null,
         name: r'remindersControllerProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -121,7 +121,7 @@ final class RemindersControllerProvider
 }
 
 String _$remindersControllerHash() =>
-    r'2042a09563705e290e38a87b8878a36f7e6fc93e';
+    r'abde2a793f5cf08b96c94b8f348f97e79df782b4';
 
 abstract class _$RemindersController extends $AsyncNotifier<void> {
   FutureOr<void> build();

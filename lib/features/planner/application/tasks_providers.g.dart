@@ -100,7 +100,7 @@ final class TasksControllerProvider
         argument: null,
         retry: null,
         name: r'tasksControllerProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -113,7 +113,7 @@ final class TasksControllerProvider
   TasksController create() => TasksController();
 }
 
-String _$tasksControllerHash() => r'0be87a8c767d2580f7bb7dfe562383fc840b2fbf';
+String _$tasksControllerHash() => r'5611f644a81c9a2d49298f86a77b65cbd2d4c5bd';
 
 abstract class _$TasksController extends $AsyncNotifier<void> {
   FutureOr<void> build();

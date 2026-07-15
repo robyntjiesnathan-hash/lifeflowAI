@@ -67,7 +67,7 @@ Future<BudgetTodaySummary> todayBudgetSummary(Ref ref) async {
   return BudgetTodaySummary(spentToday: spentToday, budgetTarget: profile.monthlyBudgetTarget);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class BudgetController extends _$BudgetController {
   @override
   FutureOr<void> build() {}

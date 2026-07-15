@@ -175,7 +175,7 @@ final class GoalsControllerProvider
         argument: null,
         retry: null,
         name: r'goalsControllerProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -188,7 +188,7 @@ final class GoalsControllerProvider
   GoalsController create() => GoalsController();
 }
 
-String _$goalsControllerHash() => r'0efbdcb0de0ee0d82191d1e3fd9228acc4436f10';
+String _$goalsControllerHash() => r'67b925795dcf7bc8da4f5c2b0975b07c19ce73d4';
 
 abstract class _$GoalsController extends $AsyncNotifier<void> {
   FutureOr<void> build();

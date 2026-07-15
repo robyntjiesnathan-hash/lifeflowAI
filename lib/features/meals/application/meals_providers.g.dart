@@ -240,7 +240,7 @@ final class MealsControllerProvider
         argument: null,
         retry: null,
         name: r'mealsControllerProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -253,7 +253,7 @@ final class MealsControllerProvider
   MealsController create() => MealsController();
 }
 
-String _$mealsControllerHash() => r'3b86da8266bfed483747dcd24e05e3dfe8587708';
+String _$mealsControllerHash() => r'b9cefb7a354653f0595916a40644d6b6d0eab16c';
 
 abstract class _$MealsController extends $AsyncNotifier<void> {
   FutureOr<void> build();

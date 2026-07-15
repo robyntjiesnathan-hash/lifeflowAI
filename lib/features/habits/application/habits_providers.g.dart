@@ -317,7 +317,7 @@ final class HabitsControllerProvider
         argument: null,
         retry: null,
         name: r'habitsControllerProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -330,7 +330,7 @@ final class HabitsControllerProvider
   HabitsController create() => HabitsController();
 }
 
-String _$habitsControllerHash() => r'00f5617f70e67e1eeb8044c98b5dab30828df4bc';
+String _$habitsControllerHash() => r'f57645acb753971b3553f37155b3b97058a19465';
 
 abstract class _$HabitsController extends $AsyncNotifier<void> {
   FutureOr<void> build();

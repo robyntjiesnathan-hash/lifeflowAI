@@ -35,7 +35,7 @@ Stream<List<Milestone>> goalMilestones(Ref ref, String goalId) {
   return ref.watch(goalsRepositoryProvider).watchMilestones(uid, goalId);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class GoalsController extends _$GoalsController {
   @override
   FutureOr<void> build() {}

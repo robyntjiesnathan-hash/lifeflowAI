@@ -18,7 +18,7 @@ AuthRepository authRepository(Ref ref) {
 @Riverpod(keepAlive: true)
 Stream<AppUser?> authStateChanges(Ref ref) => ref.watch(authRepositoryProvider).authStateChanges();
 
-@riverpod
+@Riverpod(keepAlive: true)
 class AuthController extends _$AuthController {
   @override
   FutureOr<void> build() {}

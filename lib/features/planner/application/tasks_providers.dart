@@ -27,7 +27,7 @@ Stream<List<Task>> tasks(Ref ref) {
   return ref.watch(tasksRepositoryProvider).watchTasks(uid);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class TasksController extends _$TasksController {
   @override
   FutureOr<void> build() {}

@@ -119,7 +119,7 @@ final class UserProfileControllerProvider
         argument: null,
         retry: null,
         name: r'userProfileControllerProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -133,7 +133,7 @@ final class UserProfileControllerProvider
 }
 
 String _$userProfileControllerHash() =>
-    r'70e825f3298fc52f0c20b78e9f3b55dcbbb2f277';
+    r'd4f58c5532026eff40505a3462979e01f5d2fb4e';
 
 abstract class _$UserProfileController extends $AsyncNotifier<void> {
   FutureOr<void> build();

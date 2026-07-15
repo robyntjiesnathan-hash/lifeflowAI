@@ -226,7 +226,7 @@ final class BudgetControllerProvider
         argument: null,
         retry: null,
         name: r'budgetControllerProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -239,7 +239,7 @@ final class BudgetControllerProvider
   BudgetController create() => BudgetController();
 }
 
-String _$budgetControllerHash() => r'ed5881d82ab1a050cf65c1997feead1232e35d30';
+String _$budgetControllerHash() => r'8ed9f9b584a61f5dc66d9492430dd255c5709cea';
 
 abstract class _$BudgetController extends $AsyncNotifier<void> {
   FutureOr<void> build();

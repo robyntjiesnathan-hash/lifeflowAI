@@ -214,7 +214,7 @@ final class AiCoachStreamingReplyProvider
         argument: null,
         retry: null,
         name: r'aiCoachStreamingReplyProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -237,7 +237,7 @@ final class AiCoachStreamingReplyProvider
 }
 
 String _$aiCoachStreamingReplyHash() =>
-    r'5031aade581480ab3b5f0d1747ef770b60e545ad';
+    r'e7ec6aa9984c18d705b7d411570b9e7eda02ca26';
 
 /// Holds the conversationId + accumulated text of an assistant reply that
 /// is still streaming in, or `null` when nothing is in progress.
@@ -286,7 +286,7 @@ final class AiCoachControllerProvider
         argument: null,
         retry: null,
         name: r'aiCoachControllerProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -299,7 +299,7 @@ final class AiCoachControllerProvider
   AiCoachController create() => AiCoachController();
 }
 
-String _$aiCoachControllerHash() => r'9235e1caaeaeb410a5a23dfcfb49879cc550bf34';
+String _$aiCoachControllerHash() => r'619b185c21c191bd60c101452539a551620ed685';
 
 abstract class _$AiCoachController extends $AsyncNotifier<void> {
   FutureOr<void> build();

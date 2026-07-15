@@ -48,7 +48,7 @@ Stream<List<AiMessage>> conversationMessages(Ref ref, String conversationId) {
 /// [AiService.sendMessage]. Once the stream completes, the final message
 /// has already been persisted via the repository and this is cleared, so
 /// [conversationMessagesProvider] takes over rendering it from then on.
-@riverpod
+@Riverpod(keepAlive: true)
 class AiCoachStreamingReply extends _$AiCoachStreamingReply {
   @override
   ({String conversationId, String text})? build() => null;
@@ -58,7 +58,12 @@ class AiCoachStreamingReply extends _$AiCoachStreamingReply {
   void clear() => state = null;
 }
 
-@riverpod
+// keepAlive: sendMessage() is a multi-second streaming operation reached
+// only via `ref.read(...).notifier` (the screen never `ref.watch`s this
+// controller directly) — with the default autoDispose behavior the
+// provider was being torn down mid-stream, throwing "Cannot use the Ref
+// ... after it has been disposed" the moment the async gap resumed.
+@Riverpod(keepAlive: true)
 class AiCoachController extends _$AiCoachController {
   @override
   FutureOr<void> build() {}

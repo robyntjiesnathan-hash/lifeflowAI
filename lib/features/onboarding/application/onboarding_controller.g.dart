@@ -73,7 +73,7 @@ final class OnboardingControllerProvider
         argument: null,
         retry: null,
         name: r'onboardingControllerProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -87,7 +87,7 @@ final class OnboardingControllerProvider
 }
 
 String _$onboardingControllerHash() =>
-    r'fec34a2c44050e5ed51ba0f7aab2783979657c83';
+    r'c08b6c9233efef733134edcfdc44a0dbb73a5ee4';
 
 abstract class _$OnboardingController extends $AsyncNotifier<void> {
   FutureOr<void> build();

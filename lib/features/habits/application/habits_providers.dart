@@ -77,7 +77,7 @@ Future<List<double>> habitsWeeklyProgress(Ref ref) async {
   return results;
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class HabitsController extends _$HabitsController {
   @override
   FutureOr<void> build() {}
