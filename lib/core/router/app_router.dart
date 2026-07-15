@@ -8,6 +8,8 @@ import '../../features/auth/presentation/screens/sign_in_screen.dart';
 import '../../features/auth/presentation/screens/sign_up_screen.dart';
 import '../../features/budget/presentation/screens/bills_screen.dart';
 import '../../features/budget/presentation/screens/budget_screen.dart';
+import '../../features/goals/presentation/screens/goal_detail_screen.dart';
+import '../../features/goals/presentation/screens/goals_screen.dart';
 import '../../features/habits/presentation/screens/habit_detail_screen.dart';
 import '../../features/habits/presentation/screens/habits_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
@@ -88,11 +90,11 @@ GoRouter goRouter(Ref ref) {
           StatefulShellBranch(routes: [
             GoRoute(
               path: RoutePaths.goals,
-              builder: (context, state) => const PlaceholderScreen(title: 'Goals'),
+              builder: (context, state) => const GoalsScreen(),
               routes: [
                 GoRoute(
                   path: ':goalId',
-                  builder: (context, state) => PlaceholderScreen(title: 'Goal ${state.pathParameters['goalId']}'),
+                  builder: (context, state) => GoalDetailScreen(goalId: state.pathParameters['goalId']!),
                 ),
               ],
             ),
