@@ -51,15 +51,12 @@ class FakeUserProfileRepository implements UserProfileRepository {
   Future<void> updateFields(String uid, Map<String, dynamic> fields) async {
     final current = _store[uid];
     if (current == null) return;
-    // Fake mode only needs to support the flat top-level fields the app
-    // itself writes via updateFields (e.g. isPremium); nested-field dotted
-    // paths aren't exercised without a real Firestore doc.
-    var updated = current;
-    if (fields.containsKey('isPremium')) updated = updated.copyWith(isPremium: fields['isPremium'] as bool);
-    if (fields.containsKey('onboardingComplete')) {
-      updated = updated.copyWith(onboardingComplete: fields['onboardingComplete'] as bool);
-    }
-    updated = updated.copyWith(updatedAt: DateTime.now());
+    // Merge onto the JSON representation (rather than special-casing each
+    // field) so every top-level field callers write via updateFields — e.g.
+    // isPremium, premiumSince, notificationPrefs — behaves the same way it
+    // would against a real Firestore doc's `update()`.
+    final merged = {...current.toJson(), ...fields, 'updatedAt': DateTime.now().toIso8601String()};
+    final updated = UserProfile.fromJson(merged);
     _store[uid] = updated;
     _controllerFor(uid).add(updated);
   }

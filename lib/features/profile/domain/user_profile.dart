@@ -39,6 +39,7 @@ class _TimestampConverter implements JsonConverter<DateTime?, Object?> {
   DateTime? fromJson(Object? json) {
     if (json == null) return null;
     if (json is Timestamp) return json.toDate();
+    if (json is DateTime) return json;
     if (json is String) return DateTime.tryParse(json);
     return null;
   }
