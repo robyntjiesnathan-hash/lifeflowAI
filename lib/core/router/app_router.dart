@@ -6,11 +6,16 @@ import '../../features/auth/presentation/screens/auth_welcome_screen.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/sign_in_screen.dart';
 import '../../features/auth/presentation/screens/sign_up_screen.dart';
+import '../../features/budget/presentation/screens/bills_screen.dart';
+import '../../features/budget/presentation/screens/budget_screen.dart';
 import '../../features/habits/presentation/screens/habit_detail_screen.dart';
 import '../../features/habits/presentation/screens/habits_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
+import '../../features/planner/presentation/screens/planner_screen.dart';
+import '../../features/planner/presentation/screens/task_detail_screen.dart';
 import '../../features/profile/application/user_profile_providers.dart';
+import '../../features/reminders/presentation/screens/reminders_screen.dart';
 import '../../features/shell/presentation/screens/shell_scaffold.dart';
 import '../../features/shell/presentation/screens/splash_screen.dart';
 import '../widgets/placeholder_screen.dart';
@@ -70,12 +75,12 @@ GoRouter goRouter(Ref ref) {
           StatefulShellBranch(routes: [
             GoRoute(
               path: RoutePaths.planner,
-              builder: (context, state) => const PlaceholderScreen(title: 'Planner'),
+              builder: (context, state) => const PlannerScreen(),
               routes: [
                 GoRoute(
                   path: 'task/:taskId',
                   builder: (context, state) =>
-                      PlaceholderScreen(title: 'Task ${state.pathParameters['taskId']}'),
+                      TaskDetailScreen(taskId: state.pathParameters['taskId']!),
                 ),
               ],
             ),
@@ -127,13 +132,13 @@ GoRouter goRouter(Ref ref) {
       ),
       GoRoute(
         path: RoutePaths.budget,
-        builder: (context, state) => const PlaceholderScreen(title: 'Budget'),
+        builder: (context, state) => const BudgetScreen(),
         routes: [
           GoRoute(path: 'transaction/:transactionId', builder: (context, state) => const PlaceholderScreen(title: 'Transaction')),
-          GoRoute(path: 'bills', builder: (context, state) => const PlaceholderScreen(title: 'Bills')),
+          GoRoute(path: 'bills', builder: (context, state) => const BillsScreen()),
         ],
       ),
-      GoRoute(path: RoutePaths.reminders, builder: (context, state) => const PlaceholderScreen(title: 'Reminders')),
+      GoRoute(path: RoutePaths.reminders, builder: (context, state) => const RemindersScreen()),
       GoRoute(
         path: RoutePaths.notificationsSettings,
         builder: (context, state) => const PlaceholderScreen(title: 'Notification Settings'),
