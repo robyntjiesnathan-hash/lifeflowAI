@@ -2,6 +2,11 @@ name: Build Debug APK
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - claude/lifeflow-ai-app-ohmv99
+    paths:
+      - .github/workflows/build-apk.yml
 
 jobs:
   build:
