@@ -5,8 +5,6 @@ on:
   push:
     branches:
       - claude/lifeflow-ai-app-ohmv99
-    paths:
-      - .github/workflows/build-apk.yml
 
 jobs:
   build:
