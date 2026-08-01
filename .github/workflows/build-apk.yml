@@ -27,22 +27,22 @@ jobs:
 
       - run: flutter pub get
 
-      - run: flutter build apk --debug --dart-define=USE_FAKE_AUTH=true
+      - run: flutter build apk --release --split-per-abi --dart-define=USE_FAKE_AUTH=true
 
       - uses: actions/upload-artifact@v4
         with:
-          name: lifeflow-ai-debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: lifeflow-ai-release-apks
+          path: build/app/outputs/flutter-apk/app-*-release.apk
           retention-days: 30
 
-      - name: Publish APK to apk-builds branch
+      - name: Publish arm64 APK to apk-builds branch
         run: |
-          cp build/app/outputs/flutter-apk/app-debug.apk /tmp/app-debug.apk
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk /tmp/app-arm64-v8a-release.apk
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout --orphan apk-builds
           git rm -rf . > /dev/null
-          cp /tmp/app-debug.apk app-debug.apk
-          git add app-debug.apk
+          cp /tmp/app-arm64-v8a-release.apk lifeflow-ai.apk
+          git add lifeflow-ai.apk
           git commit -m "APK build for ${{ github.sha }}"
           git push origin HEAD:apk-builds --force
