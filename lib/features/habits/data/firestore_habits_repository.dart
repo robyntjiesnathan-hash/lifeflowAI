@@ -62,16 +62,16 @@ class FirestoreHabitsRepository implements HabitsRepository {
   Future<void> deleteHabit(String uid, String habitId) => _habitsCol(uid).doc(habitId).delete();
 
   @override
-  Future<void> toggleCompletion(String uid, String habitId, {DateTime? date}) async {
+  Future<int> toggleCompletion(String uid, String habitId, {DateTime? date}) async {
     final targetDate = date ?? DateTime.now();
     final dateKey = _dateFormat.format(targetDate);
     final habitRef = _habitsCol(uid).doc(habitId);
     final completionRef = habitRef.collection(FirestorePaths.completions).doc(dateKey);
 
-    await _firestore.runTransaction((transaction) async {
+    return _firestore.runTransaction<int>((transaction) async {
       final habitSnap = await transaction.get(habitRef);
       final completionSnap = await transaction.get(completionRef);
-      if (!habitSnap.exists) return;
+      if (!habitSnap.exists) return 0;
 
       final habit = Habit.fromJson({...habitSnap.data()!, 'id': habitId});
       final isCurrentlyComplete = completionSnap.exists && (completionSnap.data()?['completed'] as bool? ?? false);
@@ -88,10 +88,13 @@ class FirestoreHabitsRepository implements HabitsRepository {
           'longestStreak': newStreak > habit.longestStreak ? newStreak : habit.longestStreak,
           'lastCompletedDate': Timestamp.fromDate(targetDate),
         });
+        return newStreak;
       } else {
         transaction.set(completionRef, HabitCompletion(date: dateKey, completed: false).toJson());
         final decremented = habit.currentStreak - 1;
-        transaction.update(habitRef, {'currentStreak': decremented < 0 ? 0 : decremented});
+        final clamped = decremented < 0 ? 0 : decremented;
+        transaction.update(habitRef, {'currentStreak': clamped});
+        return clamped;
       }
     });
   }

@@ -4,7 +4,9 @@ import '../../../core/config/app_config.dart';
 import '../../../core/constants/xp_rules.dart';
 import '../../../core/providers/firebase_providers.dart';
 import '../../auth/application/auth_providers.dart';
+import '../../gamification/application/badge_evaluator.dart';
 import '../../gamification/application/gamification_service.dart';
+import '../../gamification/domain/badge_catalog.dart';
 import '../data/fake_habits_repository.dart';
 import '../data/firestore_habits_repository.dart';
 import '../domain/habit.dart';
@@ -112,9 +114,14 @@ class HabitsController extends _$HabitsController {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final uid = _uid;
-      await ref.read(habitsRepositoryProvider).toggleCompletion(uid, habitId);
+      final newStreak = await ref.read(habitsRepositoryProvider).toggleCompletion(uid, habitId);
       if (!wasComplete) {
-        await ref.read(gamificationServiceProvider).awardXp(uid, XpRules.habitComplete);
+        final summary = await ref
+            .read(gamificationServiceProvider)
+            .awardXp(uid, XpRules.habitComplete, category: BadgeCategory.habits);
+        final evaluator = ref.read(badgeEvaluatorProvider);
+        await evaluator.evaluateStreak(uid, newStreak);
+        await evaluator.evaluateHabits(uid, summary.habitsCompletedCount);
       }
       ref.invalidate(habitsWeeklyProgressProvider);
     });

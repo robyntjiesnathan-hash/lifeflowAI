@@ -22,5 +22,7 @@ abstract class HabitsRepository {
   /// Toggles today's (or [date]'s) completion, recomputing
   /// `currentStreak`/`longestStreak` transactionally off the last
   /// completion rather than aggregating full history on every toggle.
-  Future<void> toggleCompletion(String uid, String habitId, {DateTime? date});
+  /// Returns the habit's resulting `currentStreak` so callers can evaluate
+  /// streak-based badges without a second read.
+  Future<int> toggleCompletion(String uid, String habitId, {DateTime? date});
 }

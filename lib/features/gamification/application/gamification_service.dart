@@ -6,6 +6,7 @@ import '../../../core/config/app_config.dart';
 import '../../../core/constants/firestore_paths.dart';
 import '../../../core/constants/xp_rules.dart';
 import '../../../core/providers/firebase_providers.dart';
+import '../domain/badge_catalog.dart';
 import '../domain/gamification_summary.dart';
 
 part 'gamification_service.g.dart';
@@ -20,7 +21,13 @@ final _dateFormat = DateFormat('yyyy-MM-dd');
 abstract class GamificationService {
   Stream<GamificationSummary> watchSummary(String uid);
 
-  Future<void> awardXp(String uid, int amount);
+  /// Awards [amount] XP and, when [category] is one of the cumulative-count
+  /// badge categories (habits/tasks/goals — `streak` is tracked separately
+  /// via each habit's own `currentStreak`), increments that category's
+  /// running completion count. Returns the resulting summary so callers can
+  /// evaluate count-based badges against the up-to-date totals without a
+  /// second read.
+  Future<GamificationSummary> awardXp(String uid, int amount, {BadgeCategory? category});
 }
 
 class FirestoreGamificationService implements GamificationService {
@@ -40,13 +47,14 @@ class FirestoreGamificationService implements GamificationService {
       );
 
   @override
-  Future<void> awardXp(String uid, int amount) async {
+  Future<GamificationSummary> awardXp(String uid, int amount, {BadgeCategory? category}) async {
     final ref = _doc(uid);
-    await _firestore.runTransaction((transaction) async {
+    return _firestore.runTransaction<GamificationSummary>((transaction) async {
       final snap = await transaction.get(ref);
       final current = snap.exists ? GamificationSummary.fromJson(snap.data()!) : const GamificationSummary();
-      final updated = _applyXp(current, amount);
+      final updated = _applyXp(current, amount, category);
       transaction.set(ref, updated.toJson());
+      return updated;
     });
   }
 }
@@ -59,13 +67,15 @@ class FakeGamificationService implements GamificationService {
       Stream.value(_store[uid] ?? const GamificationSummary());
 
   @override
-  Future<void> awardXp(String uid, int amount) async {
+  Future<GamificationSummary> awardXp(String uid, int amount, {BadgeCategory? category}) async {
     final current = _store[uid] ?? const GamificationSummary();
-    _store[uid] = _applyXp(current, amount);
+    final updated = _applyXp(current, amount, category);
+    _store[uid] = updated;
+    return updated;
   }
 }
 
-GamificationSummary _applyXp(GamificationSummary current, int amount) {
+GamificationSummary _applyXp(GamificationSummary current, int amount, BadgeCategory? category) {
   final today = _dateFormat.format(DateTime.now());
   final yesterday = _dateFormat.format(DateTime.now().subtract(const Duration(days: 1)));
   final lastActiveKey = current.lastActiveDate == null ? null : _dateFormat.format(current.lastActiveDate!);
@@ -83,6 +93,9 @@ GamificationSummary _applyXp(GamificationSummary current, int amount) {
     currentStreakDays: newStreak,
     longestStreakDays: newStreak > current.longestStreakDays ? newStreak : current.longestStreakDays,
     lastActiveDate: DateTime.now(),
+    habitsCompletedCount: category == BadgeCategory.habits ? current.habitsCompletedCount + 1 : current.habitsCompletedCount,
+    tasksCompletedCount: category == BadgeCategory.tasks ? current.tasksCompletedCount + 1 : current.tasksCompletedCount,
+    goalsCompletedCount: category == BadgeCategory.goals ? current.goalsCompletedCount + 1 : current.goalsCompletedCount,
   );
 }
 

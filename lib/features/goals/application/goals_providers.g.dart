@@ -188,7 +188,7 @@ final class GoalsControllerProvider
   GoalsController create() => GoalsController();
 }
 
-String _$goalsControllerHash() => r'67b925795dcf7bc8da4f5c2b0975b07c19ce73d4';
+String _$goalsControllerHash() => r'ed21a078d7062c7cecebddda5501599bc804c6d7';
 
 abstract class _$GoalsController extends $AsyncNotifier<void> {
   FutureOr<void> build();

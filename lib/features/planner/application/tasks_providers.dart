@@ -4,7 +4,9 @@ import '../../../core/config/app_config.dart';
 import '../../../core/constants/xp_rules.dart';
 import '../../../core/providers/firebase_providers.dart';
 import '../../auth/application/auth_providers.dart';
+import '../../gamification/application/badge_evaluator.dart';
 import '../../gamification/application/gamification_service.dart';
+import '../../gamification/domain/badge_catalog.dart';
 import '../data/fake_tasks_repository.dart';
 import '../data/firestore_tasks_repository.dart';
 import '../domain/task.dart';
@@ -61,7 +63,10 @@ class TasksController extends _$TasksController {
       final uid = _uid;
       final nowDone = await ref.read(tasksRepositoryProvider).toggleStatus(uid, taskId);
       if (nowDone) {
-        await ref.read(gamificationServiceProvider).awardXp(uid, XpRules.taskComplete);
+        final summary = await ref
+            .read(gamificationServiceProvider)
+            .awardXp(uid, XpRules.taskComplete, category: BadgeCategory.tasks);
+        await ref.read(badgeEvaluatorProvider).evaluateTasks(uid, summary.tasksCompletedCount);
       }
     });
   }

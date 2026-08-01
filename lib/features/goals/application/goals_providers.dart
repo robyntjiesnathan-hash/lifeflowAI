@@ -4,7 +4,9 @@ import '../../../core/config/app_config.dart';
 import '../../../core/constants/xp_rules.dart';
 import '../../../core/providers/firebase_providers.dart';
 import '../../auth/application/auth_providers.dart';
+import '../../gamification/application/badge_evaluator.dart';
 import '../../gamification/application/gamification_service.dart';
+import '../../gamification/domain/badge_catalog.dart';
 import '../data/fake_goals_repository.dart';
 import '../data/firestore_goals_repository.dart';
 import '../domain/goal.dart';
@@ -74,7 +76,10 @@ class GoalsController extends _$GoalsController {
           : goal;
       await ref.read(goalsRepositoryProvider).updateGoal(uid, toSave);
       if (becameCompleted) {
-        await ref.read(gamificationServiceProvider).awardXp(uid, XpRules.goalComplete);
+        final summary = await ref
+            .read(gamificationServiceProvider)
+            .awardXp(uid, XpRules.goalComplete, category: BadgeCategory.goals);
+        await ref.read(badgeEvaluatorProvider).evaluateGoals(uid, summary.goalsCompletedCount);
       }
     });
   }
@@ -121,7 +126,10 @@ class GoalsController extends _$GoalsController {
           uid,
           goal.copyWith(status: GoalStatus.completed, completedAt: DateTime.now(), progressPercent: 100),
         );
-        await ref.read(gamificationServiceProvider).awardXp(uid, XpRules.goalComplete);
+        final summary = await ref
+            .read(gamificationServiceProvider)
+            .awardXp(uid, XpRules.goalComplete, category: BadgeCategory.goals);
+        await ref.read(badgeEvaluatorProvider).evaluateGoals(uid, summary.goalsCompletedCount);
       }
     });
   }
@@ -140,7 +148,10 @@ class GoalsController extends _$GoalsController {
         final goal = _findGoal(goalId);
         if (goal != null && goal.status != GoalStatus.completed) {
           await repo.updateGoal(uid, goal.copyWith(status: GoalStatus.completed, completedAt: DateTime.now()));
-          await ref.read(gamificationServiceProvider).awardXp(uid, XpRules.goalComplete);
+          final summary = await ref
+              .read(gamificationServiceProvider)
+              .awardXp(uid, XpRules.goalComplete, category: BadgeCategory.goals);
+          await ref.read(badgeEvaluatorProvider).evaluateGoals(uid, summary.goalsCompletedCount);
         }
       }
     });

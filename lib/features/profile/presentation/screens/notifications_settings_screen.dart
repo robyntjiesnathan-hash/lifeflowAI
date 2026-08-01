@@ -1,19 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/services/local_notification_service.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../application/user_profile_providers.dart';
 import '../../domain/user_profile.dart';
 
 /// Toggles bound to [UserProfile.notificationPrefs], persisted via
-/// [UserProfileController.updateFields].
+/// [UserProfileController.updateFields] and mirrored into real scheduled
+/// local notifications via [LocalNotificationService].
 class NotificationsSettingsScreen extends ConsumerWidget {
   const NotificationsSettingsScreen({super.key});
 
-  Future<void> _updatePrefs(WidgetRef ref, UserProfile profile, NotificationPrefs prefs) {
-    return ref.read(userProfileControllerProvider.notifier).updateFields(profile.uid, {
+  // Fixed ids so re-scheduling (toggle on/off, or a changed reminder time)
+  // replaces the existing notification instead of stacking duplicates.
+  static const int _dailySummaryNotificationId = 9001;
+  static const int _habitReminderNotificationId = 9002;
+
+  Future<void> _updatePrefs(WidgetRef ref, UserProfile profile, NotificationPrefs prefs) async {
+    await ref.read(userProfileControllerProvider.notifier).updateFields(profile.uid, {
       'notificationPrefs': prefs.toJson(),
     });
+    await _applySchedule(prefs);
+  }
+
+  Future<void> _applySchedule(NotificationPrefs prefs) async {
+    final service = LocalNotificationService.instance;
+    final parts = prefs.reminderTime.split(':');
+    final hour = int.tryParse(parts[0]) ?? 8;
+    final minute = int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0;
+
+    if (prefs.dailySummary) {
+      await service.scheduleDaily(
+        id: _dailySummaryNotificationId,
+        title: 'Your day ahead',
+        body: 'Good morning! Check today\'s plan in LifeFlow AI.',
+        hour: hour,
+        minute: minute,
+      );
+    } else {
+      await service.cancel(_dailySummaryNotificationId);
+    }
+
+    if (prefs.habitReminders) {
+      await service.scheduleDaily(
+        id: _habitReminderNotificationId,
+        title: 'Keep your streak alive',
+        body: 'Don\'t forget to log today\'s habits in LifeFlow AI.',
+        hour: hour,
+        minute: minute,
+      );
+    } else {
+      await service.cancel(_habitReminderNotificationId);
+    }
   }
 
   Future<void> _pickReminderTime(BuildContext context, WidgetRef ref, UserProfile profile) async {

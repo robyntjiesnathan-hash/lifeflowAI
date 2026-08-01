@@ -11,10 +11,18 @@ import '../../../../core/widgets/flow_mascot.dart';
 import '../../../../core/widgets/progress_ring.dart';
 import '../../../../core/widgets/section_header.dart';
 import '../../../auth/application/auth_providers.dart';
+import '../../../budget/application/budget_providers.dart';
 import '../../../gamification/application/gamification_service.dart';
 import '../../../habits/application/habits_providers.dart';
 import '../../../habits/domain/habit.dart';
+import '../../../meals/application/meals_providers.dart';
+import '../../../meals/domain/meal_plan.dart';
+import '../../../meals/domain/recipe.dart';
+import '../../../planner/application/tasks_providers.dart';
+import '../../../planner/domain/task.dart';
 import '../../../profile/application/user_profile_providers.dart';
+
+bool _isSameDay(DateTime a, DateTime b) => a.year == b.year && a.month == b.month && a.day == b.day;
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -37,32 +45,44 @@ class HomeScreen extends ConsumerWidget {
     final name = profileAsync.value?.displayName?.trim();
     final displayName = (name == null || name.isEmpty) ? (user?.displayName ?? 'there') : name;
 
+    final tasks = ref.watch(tasksProvider).value ?? const <Task>[];
+    final now = DateTime.now();
+    final todaysTasks = tasks.where((t) => t.dueDate != null && _isSameDay(t.dueDate!, now)).toList()
+      ..sort((a, b) => (a.dueTime ?? '').compareTo(b.dueTime ?? ''));
+
+    final mealPlanAsync = ref.watch(currentWeekMealPlanProvider);
+    final recipesAsync = ref.watch(recipesProvider);
+    final budgetSummaryAsync = ref.watch(todayBudgetSummaryProvider);
+
     return Scaffold(
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {
             ref.invalidate(habitsProvider);
             ref.invalidate(currentUserProfileProvider);
+            ref.invalidate(tasksProvider);
+            ref.invalidate(currentWeekMealPlanProvider);
+            ref.invalidate(todayBudgetSummaryProvider);
           },
           child: ListView(
             padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, 100),
             children: [
               _HomeHeader(greeting: _greeting(), name: displayName),
               const SizedBox(height: AppSpacing.lg),
-              _DailyProgressCard(habits: habits),
+              _DailyProgressCard(habits: habits, todaysTasks: todaysTasks),
               const SizedBox(height: AppSpacing.lg),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(child: _TodayScheduleCard()),
+                  Expanded(child: _TodayScheduleCard(todaysTasks: todaysTasks)),
                   const SizedBox(width: AppSpacing.md),
                   Expanded(child: _HabitsPreviewCard(habits: habits)),
                 ],
               ),
               const SizedBox(height: AppSpacing.lg),
-              const _MealPlanCard(),
+              _MealPlanCard(mealPlanAsync: mealPlanAsync, recipesAsync: recipesAsync),
               const SizedBox(height: AppSpacing.lg),
-              const _BudgetTodayCard(),
+              _BudgetTodayCard(summaryAsync: budgetSummaryAsync),
               const SizedBox(height: AppSpacing.lg),
               _AiCoachCard(
                 streakDays: summaryAsync?.value?.currentStreakDays ?? 0,
@@ -98,7 +118,7 @@ class _HomeHeader extends StatelessWidget {
           ),
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () => GoRouter.of(context).push(RoutePaths.reminders),
           icon: Icon(Icons.notifications_none_rounded, color: theme.textTheme.headlineSmall?.color),
         ),
         GestureDetector(
@@ -115,15 +135,18 @@ class _HomeHeader extends StatelessWidget {
 }
 
 class _DailyProgressCard extends StatelessWidget {
-  const _DailyProgressCard({required this.habits});
+  const _DailyProgressCard({required this.habits, required this.todaysTasks});
 
   final List<Habit> habits;
+  final List<Task> todaysTasks;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final habitsMet = habits.where((h) => h.currentStreak > 0).length;
     final habitsTotal = habits.length;
+    final tasksDone = todaysTasks.where((t) => t.isDone).length;
+    final tasksTotal = todaysTasks.length;
     final percent = habitsTotal == 0 ? 0.0 : habitsMet / habitsTotal;
 
     return AppCard(
@@ -147,7 +170,11 @@ class _DailyProgressCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text('Daily Progress', style: theme.textTheme.titleMedium),
-                _StatLine(icon: Icons.check_circle_outline_rounded, label: 'Tasks Done', value: '— / —'),
+                _StatLine(
+                  icon: Icons.check_circle_outline_rounded,
+                  label: 'Tasks Done',
+                  value: tasksTotal == 0 ? '0 / 0' : '$tasksDone / $tasksTotal',
+                ),
                 _StatLine(icon: Icons.repeat_rounded, label: 'Habits Met', value: '$habitsMet / $habitsTotal'),
                 _StatLine(icon: Icons.timer_outlined, label: 'Focus Time', value: '—'),
               ],
@@ -184,7 +211,9 @@ class _StatLine extends StatelessWidget {
 }
 
 class _TodayScheduleCard extends StatelessWidget {
-  const _TodayScheduleCard();
+  const _TodayScheduleCard({required this.todaysTasks});
+
+  final List<Task> todaysTasks;
 
   @override
   Widget build(BuildContext context) {
@@ -195,9 +224,33 @@ class _TodayScheduleCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SectionHeader(title: "Today's Schedule"),
-          Icon(Icons.calendar_today_rounded, color: theme.colorScheme.primary, size: 20),
-          const SizedBox(height: AppSpacing.sm),
-          Text('Open Planner to see your day', style: theme.textTheme.bodySmall),
+          if (todaysTasks.isEmpty) ...[
+            Icon(Icons.calendar_today_rounded, color: theme.colorScheme.primary, size: 20),
+            const SizedBox(height: AppSpacing.sm),
+            Text('Nothing scheduled today', style: theme.textTheme.bodySmall),
+          ] else
+            for (final task in todaysTasks.take(3))
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        task.title,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          decoration: task.isDone ? TextDecoration.lineThrough : null,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Icon(
+                      task.isDone ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
+                      size: 18,
+                      color: task.isDone ? theme.colorScheme.primary : theme.dividerColor,
+                    ),
+                  ],
+                ),
+              ),
         ],
       ),
     );
@@ -241,13 +294,41 @@ class _HabitsPreviewCard extends StatelessWidget {
   }
 }
 
+/// Picks the meal slot most relevant to the current time of day, so the
+/// Home card always shows "what's next" rather than always Breakfast.
+MealSlot _currentMealSlot() {
+  final hour = DateTime.now().hour;
+  if (hour < 11) return MealSlot.breakfast;
+  if (hour < 15) return MealSlot.lunch;
+  if (hour < 21) return MealSlot.dinner;
+  return MealSlot.snack;
+}
+
 class _MealPlanCard extends StatelessWidget {
-  const _MealPlanCard();
+  const _MealPlanCard({required this.mealPlanAsync, required this.recipesAsync});
+
+  final AsyncValue<MealPlan> mealPlanAsync;
+  final AsyncValue<List<Recipe>> recipesAsync;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final semantic = context.semanticColors;
+    final slot = _currentMealSlot();
+    final todayKey = MealPlanWeek.weekdayKeys[DateTime.now().weekday - 1];
+
+    final recipeId = mealPlanAsync.value?.recipeIdFor(todayKey, slot.key);
+    Recipe? recipe;
+    if (recipeId != null) {
+      final recipes = recipesAsync.value ?? const <Recipe>[];
+      for (final r in recipes) {
+        if (r.id == recipeId) {
+          recipe = r;
+          break;
+        }
+      }
+    }
+
     return AppCard(
       onTap: () => GoRouter.of(context).push(RoutePaths.meals),
       child: Row(
@@ -258,8 +339,12 @@ class _MealPlanCard extends StatelessWidget {
               children: [
                 Text('Meal Plan', style: theme.textTheme.titleMedium),
                 const SizedBox(height: 4),
-                Text('Breakfast', style: theme.textTheme.bodySmall),
-                Text('Plan your meals for today', style: theme.textTheme.bodyMedium),
+                Text(slot.label, style: theme.textTheme.bodySmall),
+                Text(
+                  recipe?.title ?? 'Plan your meals for today',
+                  style: theme.textTheme.bodyMedium,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),
@@ -267,7 +352,7 @@ class _MealPlanCard extends StatelessWidget {
             width: 56,
             height: 56,
             decoration: BoxDecoration(color: semantic.categoryTealTint, borderRadius: BorderRadius.circular(AppRadii.md)),
-            child: Icon(Icons.restaurant_rounded, color: semantic.categoryTeal),
+            child: Icon(slot.icon, color: semantic.categoryTeal),
           ),
         ],
       ),
@@ -276,11 +361,18 @@ class _MealPlanCard extends StatelessWidget {
 }
 
 class _BudgetTodayCard extends StatelessWidget {
-  const _BudgetTodayCard();
+  const _BudgetTodayCard({required this.summaryAsync});
+
+  final AsyncValue<BudgetTodaySummary> summaryAsync;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final summary = summaryAsync.value;
+    final spentToday = summary?.spentToday ?? 0;
+    final budgetTarget = summary?.budgetTarget ?? 0;
+    final percent = budgetTarget > 0 ? (spentToday / budgetTarget).clamp(0.0, 1.0).toDouble() : 0.0;
+
     return AppCard(
       onTap: () => GoRouter.of(context).push(RoutePaths.budget),
       child: Column(
@@ -292,21 +384,21 @@ class _BudgetTodayCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Spent', style: theme.textTheme.bodySmall),
-              Text('Budget', style: theme.textTheme.bodySmall),
+              Text('Monthly budget', style: theme.textTheme.bodySmall),
             ],
           ),
           const SizedBox(height: 2),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('—', style: theme.textTheme.titleMedium),
-              Text('—', style: theme.textTheme.titleMedium),
+              Text('\$${spentToday.toStringAsFixed(2)}', style: theme.textTheme.titleMedium),
+              Text('\$${budgetTarget.toStringAsFixed(2)}', style: theme.textTheme.titleMedium),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
           ClipRRect(
             borderRadius: BorderRadius.circular(AppRadii.pill),
-            child: LinearProgressIndicator(value: 0, minHeight: 8),
+            child: LinearProgressIndicator(value: percent, minHeight: 8),
           ),
         ],
       ),

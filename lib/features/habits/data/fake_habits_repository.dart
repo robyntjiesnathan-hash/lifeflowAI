@@ -95,11 +95,11 @@ class FakeHabitsRepository implements HabitsRepository {
   }
 
   @override
-  Future<void> toggleCompletion(String uid, String habitId, {DateTime? date}) async {
+  Future<int> toggleCompletion(String uid, String habitId, {DateTime? date}) async {
     final list = _habits[uid];
-    if (list == null) return;
+    if (list == null) return 0;
     final index = list.indexWhere((h) => h.id == habitId);
-    if (index == -1) return;
+    if (index == -1) return 0;
     final habit = list[index];
     final targetDate = date ?? DateTime.now();
     final dateKey = _dateFormat.format(targetDate);
@@ -108,11 +108,13 @@ class FakeHabitsRepository implements HabitsRepository {
     final existingIndex = completionsForHabit.indexWhere((c) => c.date == dateKey);
     final isCurrentlyComplete = existingIndex != -1 && completionsForHabit[existingIndex].completed;
 
+    final int resultingStreak;
     if (!isCurrentlyComplete) {
       final yesterday = _dateFormat.format(targetDate.subtract(const Duration(days: 1)));
       final lastCompletedKey = habit.lastCompletedDate == null ? null : _dateFormat.format(habit.lastCompletedDate!);
       final continuesStreak = lastCompletedKey == yesterday;
       final newStreak = continuesStreak ? habit.currentStreak + 1 : 1;
+      resultingStreak = newStreak;
 
       final completion = HabitCompletion(date: dateKey, completed: true, completedAt: DateTime.now());
       if (existingIndex == -1) {
@@ -128,9 +130,11 @@ class FakeHabitsRepository implements HabitsRepository {
     } else {
       completionsForHabit[existingIndex] = HabitCompletion(date: dateKey, completed: false);
       final decremented = habit.currentStreak - 1;
-      list[index] = habit.copyWith(currentStreak: decremented < 0 ? 0 : decremented);
+      resultingStreak = decremented < 0 ? 0 : decremented;
+      list[index] = habit.copyWith(currentStreak: resultingStreak);
     }
     _emit(uid);
     _emitCompletions(uid, habitId);
+    return resultingStreak;
   }
 }

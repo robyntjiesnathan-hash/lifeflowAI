@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$GamificationSummary {
 
- int get xp; int get level; int get xpToNextLevel; int get currentStreakDays; int get longestStreakDays;@_TimestampConverter() DateTime? get lastActiveDate;
+ int get xp; int get level; int get xpToNextLevel; int get currentStreakDays; int get longestStreakDays;@_TimestampConverter() DateTime? get lastActiveDate; int get habitsCompletedCount; int get tasksCompletedCount; int get goalsCompletedCount;
 /// Create a copy of GamificationSummary
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $GamificationSummaryCopyWith<GamificationSummary> get copyWith => _$Gamification
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GamificationSummary&&(identical(other.xp, xp) || other.xp == xp)&&(identical(other.level, level) || other.level == level)&&(identical(other.xpToNextLevel, xpToNextLevel) || other.xpToNextLevel == xpToNextLevel)&&(identical(other.currentStreakDays, currentStreakDays) || other.currentStreakDays == currentStreakDays)&&(identical(other.longestStreakDays, longestStreakDays) || other.longestStreakDays == longestStreakDays)&&(identical(other.lastActiveDate, lastActiveDate) || other.lastActiveDate == lastActiveDate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GamificationSummary&&(identical(other.xp, xp) || other.xp == xp)&&(identical(other.level, level) || other.level == level)&&(identical(other.xpToNextLevel, xpToNextLevel) || other.xpToNextLevel == xpToNextLevel)&&(identical(other.currentStreakDays, currentStreakDays) || other.currentStreakDays == currentStreakDays)&&(identical(other.longestStreakDays, longestStreakDays) || other.longestStreakDays == longestStreakDays)&&(identical(other.lastActiveDate, lastActiveDate) || other.lastActiveDate == lastActiveDate)&&(identical(other.habitsCompletedCount, habitsCompletedCount) || other.habitsCompletedCount == habitsCompletedCount)&&(identical(other.tasksCompletedCount, tasksCompletedCount) || other.tasksCompletedCount == tasksCompletedCount)&&(identical(other.goalsCompletedCount, goalsCompletedCount) || other.goalsCompletedCount == goalsCompletedCount));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,xp,level,xpToNextLevel,currentStreakDays,longestStreakDays,lastActiveDate);
+int get hashCode => Object.hash(runtimeType,xp,level,xpToNextLevel,currentStreakDays,longestStreakDays,lastActiveDate,habitsCompletedCount,tasksCompletedCount,goalsCompletedCount);
 
 @override
 String toString() {
-  return 'GamificationSummary(xp: $xp, level: $level, xpToNextLevel: $xpToNextLevel, currentStreakDays: $currentStreakDays, longestStreakDays: $longestStreakDays, lastActiveDate: $lastActiveDate)';
+  return 'GamificationSummary(xp: $xp, level: $level, xpToNextLevel: $xpToNextLevel, currentStreakDays: $currentStreakDays, longestStreakDays: $longestStreakDays, lastActiveDate: $lastActiveDate, habitsCompletedCount: $habitsCompletedCount, tasksCompletedCount: $tasksCompletedCount, goalsCompletedCount: $goalsCompletedCount)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $GamificationSummaryCopyWith<$Res>  {
   factory $GamificationSummaryCopyWith(GamificationSummary value, $Res Function(GamificationSummary) _then) = _$GamificationSummaryCopyWithImpl;
 @useResult
 $Res call({
- int xp, int level, int xpToNextLevel, int currentStreakDays, int longestStreakDays,@_TimestampConverter() DateTime? lastActiveDate
+ int xp, int level, int xpToNextLevel, int currentStreakDays, int longestStreakDays,@_TimestampConverter() DateTime? lastActiveDate, int habitsCompletedCount, int tasksCompletedCount, int goalsCompletedCount
 });
 
 
@@ -65,7 +65,7 @@ class _$GamificationSummaryCopyWithImpl<$Res>
 
 /// Create a copy of GamificationSummary
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? xp = null,Object? level = null,Object? xpToNextLevel = null,Object? currentStreakDays = null,Object? longestStreakDays = null,Object? lastActiveDate = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? xp = null,Object? level = null,Object? xpToNextLevel = null,Object? currentStreakDays = null,Object? longestStreakDays = null,Object? lastActiveDate = freezed,Object? habitsCompletedCount = null,Object? tasksCompletedCount = null,Object? goalsCompletedCount = null,}) {
   return _then(_self.copyWith(
 xp: null == xp ? _self.xp : xp // ignore: cast_nullable_to_non_nullable
 as int,level: null == level ? _self.level : level // ignore: cast_nullable_to_non_nullable
@@ -73,7 +73,10 @@ as int,xpToNextLevel: null == xpToNextLevel ? _self.xpToNextLevel : xpToNextLeve
 as int,currentStreakDays: null == currentStreakDays ? _self.currentStreakDays : currentStreakDays // ignore: cast_nullable_to_non_nullable
 as int,longestStreakDays: null == longestStreakDays ? _self.longestStreakDays : longestStreakDays // ignore: cast_nullable_to_non_nullable
 as int,lastActiveDate: freezed == lastActiveDate ? _self.lastActiveDate : lastActiveDate // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,habitsCompletedCount: null == habitsCompletedCount ? _self.habitsCompletedCount : habitsCompletedCount // ignore: cast_nullable_to_non_nullable
+as int,tasksCompletedCount: null == tasksCompletedCount ? _self.tasksCompletedCount : tasksCompletedCount // ignore: cast_nullable_to_non_nullable
+as int,goalsCompletedCount: null == goalsCompletedCount ? _self.goalsCompletedCount : goalsCompletedCount // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
@@ -158,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int xp,  int level,  int xpToNextLevel,  int currentStreakDays,  int longestStreakDays, @_TimestampConverter()  DateTime? lastActiveDate)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int xp,  int level,  int xpToNextLevel,  int currentStreakDays,  int longestStreakDays, @_TimestampConverter()  DateTime? lastActiveDate,  int habitsCompletedCount,  int tasksCompletedCount,  int goalsCompletedCount)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _GamificationSummary() when $default != null:
-return $default(_that.xp,_that.level,_that.xpToNextLevel,_that.currentStreakDays,_that.longestStreakDays,_that.lastActiveDate);case _:
+return $default(_that.xp,_that.level,_that.xpToNextLevel,_that.currentStreakDays,_that.longestStreakDays,_that.lastActiveDate,_that.habitsCompletedCount,_that.tasksCompletedCount,_that.goalsCompletedCount);case _:
   return orElse();
 
 }
@@ -179,10 +182,10 @@ return $default(_that.xp,_that.level,_that.xpToNextLevel,_that.currentStreakDays
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int xp,  int level,  int xpToNextLevel,  int currentStreakDays,  int longestStreakDays, @_TimestampConverter()  DateTime? lastActiveDate)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int xp,  int level,  int xpToNextLevel,  int currentStreakDays,  int longestStreakDays, @_TimestampConverter()  DateTime? lastActiveDate,  int habitsCompletedCount,  int tasksCompletedCount,  int goalsCompletedCount)  $default,) {final _that = this;
 switch (_that) {
 case _GamificationSummary():
-return $default(_that.xp,_that.level,_that.xpToNextLevel,_that.currentStreakDays,_that.longestStreakDays,_that.lastActiveDate);case _:
+return $default(_that.xp,_that.level,_that.xpToNextLevel,_that.currentStreakDays,_that.longestStreakDays,_that.lastActiveDate,_that.habitsCompletedCount,_that.tasksCompletedCount,_that.goalsCompletedCount);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +202,10 @@ return $default(_that.xp,_that.level,_that.xpToNextLevel,_that.currentStreakDays
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int xp,  int level,  int xpToNextLevel,  int currentStreakDays,  int longestStreakDays, @_TimestampConverter()  DateTime? lastActiveDate)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int xp,  int level,  int xpToNextLevel,  int currentStreakDays,  int longestStreakDays, @_TimestampConverter()  DateTime? lastActiveDate,  int habitsCompletedCount,  int tasksCompletedCount,  int goalsCompletedCount)?  $default,) {final _that = this;
 switch (_that) {
 case _GamificationSummary() when $default != null:
-return $default(_that.xp,_that.level,_that.xpToNextLevel,_that.currentStreakDays,_that.longestStreakDays,_that.lastActiveDate);case _:
+return $default(_that.xp,_that.level,_that.xpToNextLevel,_that.currentStreakDays,_that.longestStreakDays,_that.lastActiveDate,_that.habitsCompletedCount,_that.tasksCompletedCount,_that.goalsCompletedCount);case _:
   return null;
 
 }
@@ -214,7 +217,7 @@ return $default(_that.xp,_that.level,_that.xpToNextLevel,_that.currentStreakDays
 @JsonSerializable()
 
 class _GamificationSummary implements GamificationSummary {
-  const _GamificationSummary({this.xp = 0, this.level = 1, this.xpToNextLevel = 100, this.currentStreakDays = 0, this.longestStreakDays = 0, @_TimestampConverter() this.lastActiveDate});
+  const _GamificationSummary({this.xp = 0, this.level = 1, this.xpToNextLevel = 100, this.currentStreakDays = 0, this.longestStreakDays = 0, @_TimestampConverter() this.lastActiveDate, this.habitsCompletedCount = 0, this.tasksCompletedCount = 0, this.goalsCompletedCount = 0});
   factory _GamificationSummary.fromJson(Map<String, dynamic> json) => _$GamificationSummaryFromJson(json);
 
 @override@JsonKey() final  int xp;
@@ -223,6 +226,9 @@ class _GamificationSummary implements GamificationSummary {
 @override@JsonKey() final  int currentStreakDays;
 @override@JsonKey() final  int longestStreakDays;
 @override@_TimestampConverter() final  DateTime? lastActiveDate;
+@override@JsonKey() final  int habitsCompletedCount;
+@override@JsonKey() final  int tasksCompletedCount;
+@override@JsonKey() final  int goalsCompletedCount;
 
 /// Create a copy of GamificationSummary
 /// with the given fields replaced by the non-null parameter values.
@@ -237,16 +243,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GamificationSummary&&(identical(other.xp, xp) || other.xp == xp)&&(identical(other.level, level) || other.level == level)&&(identical(other.xpToNextLevel, xpToNextLevel) || other.xpToNextLevel == xpToNextLevel)&&(identical(other.currentStreakDays, currentStreakDays) || other.currentStreakDays == currentStreakDays)&&(identical(other.longestStreakDays, longestStreakDays) || other.longestStreakDays == longestStreakDays)&&(identical(other.lastActiveDate, lastActiveDate) || other.lastActiveDate == lastActiveDate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GamificationSummary&&(identical(other.xp, xp) || other.xp == xp)&&(identical(other.level, level) || other.level == level)&&(identical(other.xpToNextLevel, xpToNextLevel) || other.xpToNextLevel == xpToNextLevel)&&(identical(other.currentStreakDays, currentStreakDays) || other.currentStreakDays == currentStreakDays)&&(identical(other.longestStreakDays, longestStreakDays) || other.longestStreakDays == longestStreakDays)&&(identical(other.lastActiveDate, lastActiveDate) || other.lastActiveDate == lastActiveDate)&&(identical(other.habitsCompletedCount, habitsCompletedCount) || other.habitsCompletedCount == habitsCompletedCount)&&(identical(other.tasksCompletedCount, tasksCompletedCount) || other.tasksCompletedCount == tasksCompletedCount)&&(identical(other.goalsCompletedCount, goalsCompletedCount) || other.goalsCompletedCount == goalsCompletedCount));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,xp,level,xpToNextLevel,currentStreakDays,longestStreakDays,lastActiveDate);
+int get hashCode => Object.hash(runtimeType,xp,level,xpToNextLevel,currentStreakDays,longestStreakDays,lastActiveDate,habitsCompletedCount,tasksCompletedCount,goalsCompletedCount);
 
 @override
 String toString() {
-  return 'GamificationSummary(xp: $xp, level: $level, xpToNextLevel: $xpToNextLevel, currentStreakDays: $currentStreakDays, longestStreakDays: $longestStreakDays, lastActiveDate: $lastActiveDate)';
+  return 'GamificationSummary(xp: $xp, level: $level, xpToNextLevel: $xpToNextLevel, currentStreakDays: $currentStreakDays, longestStreakDays: $longestStreakDays, lastActiveDate: $lastActiveDate, habitsCompletedCount: $habitsCompletedCount, tasksCompletedCount: $tasksCompletedCount, goalsCompletedCount: $goalsCompletedCount)';
 }
 
 
@@ -257,7 +263,7 @@ abstract mixin class _$GamificationSummaryCopyWith<$Res> implements $Gamificatio
   factory _$GamificationSummaryCopyWith(_GamificationSummary value, $Res Function(_GamificationSummary) _then) = __$GamificationSummaryCopyWithImpl;
 @override @useResult
 $Res call({
- int xp, int level, int xpToNextLevel, int currentStreakDays, int longestStreakDays,@_TimestampConverter() DateTime? lastActiveDate
+ int xp, int level, int xpToNextLevel, int currentStreakDays, int longestStreakDays,@_TimestampConverter() DateTime? lastActiveDate, int habitsCompletedCount, int tasksCompletedCount, int goalsCompletedCount
 });
 
 
@@ -274,7 +280,7 @@ class __$GamificationSummaryCopyWithImpl<$Res>
 
 /// Create a copy of GamificationSummary
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? xp = null,Object? level = null,Object? xpToNextLevel = null,Object? currentStreakDays = null,Object? longestStreakDays = null,Object? lastActiveDate = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? xp = null,Object? level = null,Object? xpToNextLevel = null,Object? currentStreakDays = null,Object? longestStreakDays = null,Object? lastActiveDate = freezed,Object? habitsCompletedCount = null,Object? tasksCompletedCount = null,Object? goalsCompletedCount = null,}) {
   return _then(_GamificationSummary(
 xp: null == xp ? _self.xp : xp // ignore: cast_nullable_to_non_nullable
 as int,level: null == level ? _self.level : level // ignore: cast_nullable_to_non_nullable
@@ -282,7 +288,10 @@ as int,xpToNextLevel: null == xpToNextLevel ? _self.xpToNextLevel : xpToNextLeve
 as int,currentStreakDays: null == currentStreakDays ? _self.currentStreakDays : currentStreakDays // ignore: cast_nullable_to_non_nullable
 as int,longestStreakDays: null == longestStreakDays ? _self.longestStreakDays : longestStreakDays // ignore: cast_nullable_to_non_nullable
 as int,lastActiveDate: freezed == lastActiveDate ? _self.lastActiveDate : lastActiveDate // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,habitsCompletedCount: null == habitsCompletedCount ? _self.habitsCompletedCount : habitsCompletedCount // ignore: cast_nullable_to_non_nullable
+as int,tasksCompletedCount: null == tasksCompletedCount ? _self.tasksCompletedCount : tasksCompletedCount // ignore: cast_nullable_to_non_nullable
+as int,goalsCompletedCount: null == goalsCompletedCount ? _self.goalsCompletedCount : goalsCompletedCount // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

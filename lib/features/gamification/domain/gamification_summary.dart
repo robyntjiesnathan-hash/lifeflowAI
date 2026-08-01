@@ -28,6 +28,9 @@ abstract class GamificationSummary with _$GamificationSummary {
     @Default(0) int currentStreakDays,
     @Default(0) int longestStreakDays,
     @_TimestampConverter() DateTime? lastActiveDate,
+    @Default(0) int habitsCompletedCount,
+    @Default(0) int tasksCompletedCount,
+    @Default(0) int goalsCompletedCount,
   }) = _GamificationSummary;
 
   factory GamificationSummary.fromJson(Map<String, dynamic> json) => _$GamificationSummaryFromJson(json);
