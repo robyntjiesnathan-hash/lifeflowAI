@@ -40,49 +40,59 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Create account')),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                AppTextField(
-                  controller: _email,
-                  label: 'Email',
-                  hint: 'you@example.com',
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (v) => (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight - AppSpacing.lg * 2),
+                child: Center(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        AppTextField(
+                          controller: _email,
+                          label: 'Email',
+                          hint: 'you@example.com',
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (v) => (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        AppTextField(
+                          controller: _password,
+                          label: 'Password',
+                          obscureText: true,
+                          validator: (v) => (v == null || v.length < 6) ? 'At least 6 characters' : null,
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        AppTextField(
+                          controller: _confirmPassword,
+                          label: 'Confirm password',
+                          obscureText: true,
+                          validator: (v) => v != _password.text ? 'Passwords do not match' : null,
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        GradientPillButton(
+                          label: isLoading ? 'Creating account…' : 'Create account',
+                          onPressed: isLoading
+                              ? null
+                              : () {
+                                  if (!_formKey.currentState!.validate()) return;
+                                  ref
+                                      .read(authControllerProvider.notifier)
+                                      .signUpWithEmail(email: _email.text.trim(), password: _password.text);
+                                },
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                const SizedBox(height: AppSpacing.md),
-                AppTextField(
-                  controller: _password,
-                  label: 'Password',
-                  obscureText: true,
-                  validator: (v) => (v == null || v.length < 6) ? 'At least 6 characters' : null,
-                ),
-                const SizedBox(height: AppSpacing.md),
-                AppTextField(
-                  controller: _confirmPassword,
-                  label: 'Confirm password',
-                  obscureText: true,
-                  validator: (v) => v != _password.text ? 'Passwords do not match' : null,
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                GradientPillButton(
-                  label: isLoading ? 'Creating account…' : 'Create account',
-                  onPressed: isLoading
-                      ? null
-                      : () {
-                          if (!_formKey.currentState!.validate()) return;
-                          ref
-                              .read(authControllerProvider.notifier)
-                              .signUpWithEmail(email: _email.text.trim(), password: _password.text);
-                        },
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

@@ -40,49 +40,59 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Sign in')),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                AppTextField(
-                  controller: _email,
-                  label: 'Email',
-                  hint: 'you@example.com',
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (v) => (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
-                ),
-                const SizedBox(height: AppSpacing.md),
-                AppTextField(
-                  controller: _password,
-                  label: 'Password',
-                  obscureText: true,
-                  validator: (v) => (v == null || v.length < 6) ? 'At least 6 characters' : null,
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () => context.push(RoutePaths.authForgotPassword),
-                    child: const Text('Forgot password?'),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight - AppSpacing.lg * 2),
+                child: Center(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        AppTextField(
+                          controller: _email,
+                          label: 'Email',
+                          hint: 'you@example.com',
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (v) => (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        AppTextField(
+                          controller: _password,
+                          label: 'Password',
+                          obscureText: true,
+                          validator: (v) => (v == null || v.length < 6) ? 'At least 6 characters' : null,
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () => context.push(RoutePaths.authForgotPassword),
+                            child: const Text('Forgot password?'),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        GradientPillButton(
+                          label: isLoading ? 'Signing in…' : 'Sign in',
+                          onPressed: isLoading
+                              ? null
+                              : () {
+                                  if (!_formKey.currentState!.validate()) return;
+                                  ref
+                                      .read(authControllerProvider.notifier)
+                                      .signInWithEmail(email: _email.text.trim(), password: _password.text);
+                                },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(height: AppSpacing.sm),
-                GradientPillButton(
-                  label: isLoading ? 'Signing in…' : 'Sign in',
-                  onPressed: isLoading
-                      ? null
-                      : () {
-                          if (!_formKey.currentState!.validate()) return;
-                          ref
-                              .read(authControllerProvider.notifier)
-                              .signInWithEmail(email: _email.text.trim(), password: _password.text);
-                        },
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

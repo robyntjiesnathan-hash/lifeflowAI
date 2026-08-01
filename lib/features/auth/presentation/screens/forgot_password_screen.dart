@@ -39,50 +39,62 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Reset password')),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: _sent
-              ? Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.mark_email_read_rounded, size: 48, color: Theme.of(context).colorScheme.primary),
-                    const SizedBox(height: AppSpacing.md),
-                    Text(
-                      'Check your inbox for a reset link.',
-                      style: Theme.of(context).textTheme.titleMedium,
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                )
-              : Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        "Enter the email you signed up with and we'll send you a reset link.",
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      AppTextField(
-                        controller: _email,
-                        label: 'Email',
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (v) => (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
-                      ),
-                      const SizedBox(height: AppSpacing.lg),
-                      GradientPillButton(
-                        label: isLoading ? 'Sending…' : 'Send reset link',
-                        onPressed: isLoading
-                            ? null
-                            : () {
-                                if (!_formKey.currentState!.validate()) return;
-                                ref.read(authControllerProvider.notifier).sendPasswordReset(email: _email.text.trim());
-                              },
-                      ),
-                    ],
-                  ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight - AppSpacing.lg * 2),
+                child: Center(
+                  child: _sent
+                      ? Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.mark_email_read_rounded, size: 48, color: Theme.of(context).colorScheme.primary),
+                            const SizedBox(height: AppSpacing.md),
+                            Text(
+                              'Check your inbox for a reset link.',
+                              style: Theme.of(context).textTheme.titleMedium,
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        )
+                      : Form(
+                          key: _formKey,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                "Enter the email you signed up with and we'll send you a reset link.",
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                              const SizedBox(height: AppSpacing.md),
+                              AppTextField(
+                                controller: _email,
+                                label: 'Email',
+                                keyboardType: TextInputType.emailAddress,
+                                validator: (v) => (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
+                              ),
+                              const SizedBox(height: AppSpacing.lg),
+                              GradientPillButton(
+                                label: isLoading ? 'Sending…' : 'Send reset link',
+                                onPressed: isLoading
+                                    ? null
+                                    : () {
+                                        if (!_formKey.currentState!.validate()) return;
+                                        ref
+                                            .read(authControllerProvider.notifier)
+                                            .sendPasswordReset(email: _email.text.trim());
+                                      },
+                              ),
+                            ],
+                          ),
+                        ),
                 ),
+              ),
+            );
+          },
         ),
       ),
     );
