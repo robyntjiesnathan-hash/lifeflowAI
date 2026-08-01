@@ -12,6 +12,7 @@ import '../../../../core/widgets/progress_ring.dart';
 import '../../../../core/widgets/section_header.dart';
 import '../../../auth/application/auth_providers.dart';
 import '../../../budget/application/budget_providers.dart';
+import '../../../budget/domain/currency_format.dart';
 import '../../../gamification/application/gamification_service.dart';
 import '../../../habits/application/habits_providers.dart';
 import '../../../habits/domain/habit.dart';
@@ -53,6 +54,7 @@ class HomeScreen extends ConsumerWidget {
     final mealPlanAsync = ref.watch(currentWeekMealPlanProvider);
     final recipesAsync = ref.watch(recipesProvider);
     final budgetSummaryAsync = ref.watch(todayBudgetSummaryProvider);
+    final currency = ref.watch(budgetProfileProvider).value?.currency ?? 'USD';
 
     return Scaffold(
       body: SafeArea(
@@ -82,7 +84,7 @@ class HomeScreen extends ConsumerWidget {
               const SizedBox(height: AppSpacing.lg),
               _MealPlanCard(mealPlanAsync: mealPlanAsync, recipesAsync: recipesAsync),
               const SizedBox(height: AppSpacing.lg),
-              _BudgetTodayCard(summaryAsync: budgetSummaryAsync),
+              _BudgetTodayCard(summaryAsync: budgetSummaryAsync, currency: currency),
               const SizedBox(height: AppSpacing.lg),
               _AiCoachCard(
                 streakDays: summaryAsync?.value?.currentStreakDays ?? 0,
@@ -361,9 +363,10 @@ class _MealPlanCard extends StatelessWidget {
 }
 
 class _BudgetTodayCard extends StatelessWidget {
-  const _BudgetTodayCard({required this.summaryAsync});
+  const _BudgetTodayCard({required this.summaryAsync, required this.currency});
 
   final AsyncValue<BudgetTodaySummary> summaryAsync;
+  final String currency;
 
   @override
   Widget build(BuildContext context) {
@@ -391,8 +394,8 @@ class _BudgetTodayCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('\$${spentToday.toStringAsFixed(2)}', style: theme.textTheme.titleMedium),
-              Text('\$${budgetTarget.toStringAsFixed(2)}', style: theme.textTheme.titleMedium),
+              Text(formatCurrency(spentToday, currency), style: theme.textTheme.titleMedium),
+              Text(formatCurrency(budgetTarget, currency), style: theme.textTheme.titleMedium),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),

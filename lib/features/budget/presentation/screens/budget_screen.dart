@@ -12,9 +12,11 @@ import '../../../../core/widgets/section_header.dart';
 import '../../application/budget_providers.dart';
 import '../../domain/budget_category.dart';
 import '../../domain/budget_profile.dart';
+import '../../domain/currency_format.dart';
 import '../../domain/transaction.dart';
 import '../widgets/add_edit_transaction_sheet.dart';
 import '../widgets/category_spend_row.dart';
+import '../widgets/currency_picker_sheet.dart';
 
 class BudgetScreen extends ConsumerWidget {
   const BudgetScreen({super.key});
@@ -29,6 +31,12 @@ class BudgetScreen extends ConsumerWidget {
         title: const Text('Budget'),
         leading: Navigator.canPop(context) ? const BackButton() : null,
         actions: [
+          if (profileAsync.value case final profile?)
+            TextButton.icon(
+              onPressed: () => showCurrencyPickerSheet(context, profile: profile),
+              icon: const Icon(Icons.currency_exchange_rounded, size: 18),
+              label: Text(profile.currency),
+            ),
           TextButton.icon(
             onPressed: () => context.push('/budget/bills'),
             icon: const Icon(Icons.receipt_long_rounded, size: 18),
@@ -95,7 +103,12 @@ class _BudgetContent extends StatelessWidget {
       return ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
-          _TotalSpentHeroCard(totalSpent: totalSpent, budgetTarget: budgetTarget, percent: spentPercent.toDouble()),
+          _TotalSpentHeroCard(
+            totalSpent: totalSpent,
+            budgetTarget: budgetTarget,
+            percent: spentPercent.toDouble(),
+            currency: profile.currency,
+          ),
           EmptyState(
             icon: Icons.account_balance_wallet_rounded,
             title: 'No transactions yet',
@@ -110,7 +123,12 @@ class _BudgetContent extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
-        _TotalSpentHeroCard(totalSpent: totalSpent, budgetTarget: budgetTarget, percent: spentPercent.toDouble()),
+        _TotalSpentHeroCard(
+          totalSpent: totalSpent,
+          budgetTarget: budgetTarget,
+          percent: spentPercent.toDouble(),
+          currency: profile.currency,
+        ),
         const SizedBox(height: AppSpacing.lg),
         const SectionHeader(title: 'Categories'),
         AppCard(
@@ -121,6 +139,7 @@ class _BudgetContent extends StatelessWidget {
                   category: category,
                   amountSpent: spendByCategory[category.id] ?? 0,
                   percentOfTotal: totalSpent > 0 ? ((spendByCategory[category.id] ?? 0) / totalSpent).toDouble() : 0.0,
+                  currency: profile.currency,
                 ),
             ],
           ),
@@ -142,11 +161,17 @@ class _BudgetContent extends StatelessWidget {
 }
 
 class _TotalSpentHeroCard extends StatelessWidget {
-  const _TotalSpentHeroCard({required this.totalSpent, required this.budgetTarget, required this.percent});
+  const _TotalSpentHeroCard({
+    required this.totalSpent,
+    required this.budgetTarget,
+    required this.percent,
+    required this.currency,
+  });
 
   final num totalSpent;
   final num budgetTarget;
   final double percent;
+  final String currency;
 
   @override
   Widget build(BuildContext context) {
@@ -158,12 +183,12 @@ class _TotalSpentHeroCard extends StatelessWidget {
           const Text('Total Spent', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            '\$${totalSpent.toStringAsFixed(2)}',
+            formatCurrency(totalSpent, currency),
             style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
-            '${(percent * 100).round()}% of \$${budgetTarget.toStringAsFixed(2)} budget',
+            '${(percent * 100).round()}% of ${formatCurrency(budgetTarget, currency)} budget',
             style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: AppSpacing.sm),

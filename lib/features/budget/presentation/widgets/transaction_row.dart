@@ -5,6 +5,7 @@ import '../../../../core/theme/app_semantic_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/badge_chip.dart';
 import '../../domain/budget_category.dart';
+import '../../domain/currency_format.dart';
 import '../../domain/transaction.dart';
 
 final _dateFormat = DateFormat('MMM d');
@@ -15,12 +16,14 @@ class TransactionRow extends StatelessWidget {
   const TransactionRow({
     super.key,
     required this.transaction,
+    required this.currency,
     this.category,
     this.onTap,
     this.onDelete,
   });
 
   final BudgetTransaction transaction;
+  final String currency;
   final BudgetCategory? category;
   final VoidCallback? onTap;
   final VoidCallback? onDelete;
@@ -63,7 +66,7 @@ class TransactionRow extends StatelessWidget {
               ),
             ),
             Text(
-              '$sign\$${transaction.amount.toStringAsFixed(2)}',
+              '$sign${formatCurrency(transaction.amount, currency)}',
               style: theme.textTheme.titleMedium?.copyWith(color: amountColor, fontWeight: FontWeight.w700),
             ),
             if (onDelete != null)

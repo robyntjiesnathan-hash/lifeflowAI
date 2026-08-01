@@ -61,7 +61,9 @@ class _AddEditTransactionSheetState extends ConsumerState<AddEditTransactionShee
   Widget build(BuildContext context) {
     final isEditing = widget.existing != null;
     final isLoading = ref.watch(budgetControllerProvider).isLoading;
-    final categories = ref.watch(budgetProfileProvider).value?.categories ?? const <BudgetCategory>[];
+    final profile = ref.watch(budgetProfileProvider).value;
+    final categories = profile?.categories ?? const <BudgetCategory>[];
+    final currency = profile?.currency ?? 'USD';
 
     return SafeArea(
       child: Padding(
@@ -87,7 +89,7 @@ class _AddEditTransactionSheetState extends ConsumerState<AddEditTransactionShee
               const SizedBox(height: AppSpacing.md),
               AppTextField(
                 controller: _amount,
-                label: 'Amount',
+                label: 'Amount ($currency)',
                 hint: '0.00',
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 validator: (v) {

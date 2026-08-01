@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/badge_chip.dart';
 import '../../domain/budget_category.dart';
+import '../../domain/currency_format.dart';
 
 /// One row in the Budget screen's Categories list: icon chip, category name,
 /// amount spent, and percent of total spend — matching the reference
@@ -13,11 +14,13 @@ class CategorySpendRow extends StatelessWidget {
     required this.category,
     required this.amountSpent,
     required this.percentOfTotal,
+    required this.currency,
     this.onTap,
   });
 
   final BudgetCategory category;
   final num amountSpent;
+  final String currency;
 
   /// 0.0 - 1.0
   final double percentOfTotal;
@@ -46,7 +49,7 @@ class CategorySpendRow extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text('\$${amountSpent.toStringAsFixed(2)}', style: theme.textTheme.titleMedium),
+                Text(formatCurrency(amountSpent, currency), style: theme.textTheme.titleMedium),
                 Text(
                   '${(percentOfTotal * 100).round()}%',
                   style: theme.textTheme.bodySmall,

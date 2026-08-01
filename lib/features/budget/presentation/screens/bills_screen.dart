@@ -10,6 +10,7 @@ import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/loading_skeleton.dart';
 import '../../application/budget_providers.dart';
 import '../../domain/bill.dart';
+import '../../domain/currency_format.dart';
 import '../widgets/add_edit_bill_sheet.dart';
 
 class BillsScreen extends ConsumerWidget {
@@ -18,6 +19,7 @@ class BillsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final billsAsync = ref.watch(billsProvider);
+    final currency = ref.watch(budgetProfileProvider).value?.currency ?? 'USD';
 
     return Scaffold(
       appBar: AppBar(
@@ -45,7 +47,7 @@ class BillsScreen extends ConsumerWidget {
                   for (final bill in bills)
                     Padding(
                       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                      child: _BillCard(bill: bill),
+                      child: _BillCard(bill: bill, currency: currency),
                     ),
                 const SizedBox(height: AppSpacing.md),
                 if (bills.isNotEmpty)
@@ -64,9 +66,10 @@ class BillsScreen extends ConsumerWidget {
 }
 
 class _BillCard extends ConsumerWidget {
-  const _BillCard({required this.bill});
+  const _BillCard({required this.bill, required this.currency});
 
   final Bill bill;
+  final String currency;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -90,7 +93,7 @@ class _BillCard extends ConsumerWidget {
                 const SizedBox(height: 2),
                 Row(
                   children: [
-                    Text('Due day ${bill.dueDay} · \$${bill.amount.toStringAsFixed(2)}', style: theme.textTheme.bodySmall),
+                    Text('Due day ${bill.dueDay} · ${formatCurrency(bill.amount, currency)}', style: theme.textTheme.bodySmall),
                     if (bill.isAutoPay) ...[
                       const SizedBox(width: AppSpacing.sm),
                       const BadgeChip(label: 'Auto-pay', icon: Icons.bolt_rounded),
