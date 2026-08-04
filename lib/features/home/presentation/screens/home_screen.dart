@@ -6,7 +6,9 @@ import '../../../../core/router/route_paths.dart';
 import '../../../../core/theme/app_gradients.dart';
 import '../../../../core/theme/app_semantic_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_card.dart';
+import '../../../../core/widgets/celebration_overlay.dart';
 import '../../../../core/widgets/flow_mascot.dart';
 import '../../../../core/widgets/progress_ring.dart';
 import '../../../../core/widgets/section_header.dart';
@@ -56,8 +58,26 @@ class HomeScreen extends ConsumerWidget {
     final budgetSummaryAsync = ref.watch(todayBudgetSummaryProvider);
     final currency = ref.watch(budgetProfileProvider).value?.currency ?? 'USD';
 
+    // Milestone celebration — the one orchestrated motion moment, fired
+    // when GamificationSummary's level actually increases. Everywhere else
+    // in the app stays quiet.
+    if (uid != null) {
+      ref.listen(gamificationSummaryProvider(uid), (previous, next) {
+        final prevLevel = previous?.value?.level;
+        final nextSummary = next.value;
+        if (prevLevel != null && nextSummary != null && nextSummary.level > prevLevel) {
+          showCelebration(
+            context,
+            title: 'Level ${nextSummary.level}!',
+            message: "You've earned enough XP to level up. Keep the momentum going.",
+          );
+        }
+      });
+    }
+
     return Scaffold(
       body: SafeArea(
+        bottom: false,
         child: RefreshIndicator(
           onRefresh: () async {
             ref.invalidate(habitsProvider);
@@ -67,28 +87,38 @@ class HomeScreen extends ConsumerWidget {
             ref.invalidate(todayBudgetSummaryProvider);
           },
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, 100),
+            padding: EdgeInsets.zero,
             children: [
-              _HomeHeader(greeting: _greeting(), name: displayName),
-              const SizedBox(height: AppSpacing.lg),
-              _DailyProgressCard(habits: habits, todaysTasks: todaysTasks),
-              const SizedBox(height: AppSpacing.lg),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: _TodayScheduleCard(todaysTasks: todaysTasks)),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(child: _HabitsPreviewCard(habits: habits)),
-                ],
+              _HeroScene(
+                greeting: _greeting(),
+                name: displayName,
+                habits: habits,
+                todaysTasks: todaysTasks,
               ),
               const SizedBox(height: AppSpacing.lg),
-              _MealPlanCard(mealPlanAsync: mealPlanAsync, recipesAsync: recipesAsync),
-              const SizedBox(height: AppSpacing.lg),
-              _BudgetTodayCard(summaryAsync: budgetSummaryAsync, currency: currency),
-              const SizedBox(height: AppSpacing.lg),
-              _AiCoachCard(
-                streakDays: summaryAsync?.value?.currentStreakDays ?? 0,
-                onTap: () => context.push(RoutePaths.coach),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, 140),
+                child: Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: _TodayScheduleCard(todaysTasks: todaysTasks)),
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(child: _HabitsPreviewCard(habits: habits)),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    _MealPlanCard(mealPlanAsync: mealPlanAsync, recipesAsync: recipesAsync),
+                    const SizedBox(height: AppSpacing.lg),
+                    _BudgetTodayCard(summaryAsync: budgetSummaryAsync, currency: currency),
+                    const SizedBox(height: AppSpacing.sm),
+                    _AiCoachCard(
+                      streakDays: summaryAsync?.value?.currentStreakDays ?? 0,
+                      onTap: () => context.push(RoutePaths.coach),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -98,47 +128,20 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-class _HomeHeader extends StatelessWidget {
-  const _HomeHeader({required this.greeting, required this.name});
+/// The signature element: "Flow's Sky" — a companion scene rather than the
+/// first card in a grid. Flow stands in an atmospheric sky, with the Daily
+/// Progress ring rebuilt as a floating glass card overlapping the scene's
+/// bottom edge.
+class _HeroScene extends StatelessWidget {
+  const _HeroScene({
+    required this.greeting,
+    required this.name,
+    required this.habits,
+    required this.todaysTasks,
+  });
 
   final String greeting;
   final String name;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('$greeting, $name! ☀️', style: theme.textTheme.headlineSmall),
-              const SizedBox(height: 2),
-              Text("Let's make today amazing.", style: theme.textTheme.bodyMedium),
-            ],
-          ),
-        ),
-        IconButton(
-          onPressed: () => GoRouter.of(context).push(RoutePaths.reminders),
-          icon: Icon(Icons.notifications_none_rounded, color: theme.textTheme.headlineSmall?.color),
-        ),
-        GestureDetector(
-          onTap: () => GoRouter.of(context).push(RoutePaths.profile),
-          child: CircleAvatar(
-            radius: 20,
-            backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.15),
-            child: Icon(Icons.person_rounded, color: theme.colorScheme.primary),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _DailyProgressCard extends StatelessWidget {
-  const _DailyProgressCard({required this.habits, required this.todaysTasks});
-
   final List<Habit> habits;
   final List<Task> todaysTasks;
 
@@ -150,62 +153,140 @@ class _DailyProgressCard extends StatelessWidget {
     final tasksDone = todaysTasks.where((t) => t.isDone).length;
     final tasksTotal = todaysTasks.length;
     final percent = habitsTotal == 0 ? 0.0 : habitsMet / habitsTotal;
+    // The sky scene swaps from a light pastel dawn to a dark night gradient
+    // per brightness (see AppGradients.homeSkyFor) — its text must swap with
+    // it rather than assume a light backdrop.
+    final isDark = theme.brightness == Brightness.dark;
+    final Color heroText = isDark ? const Color(0xFFF5F2FB) : const Color(0xFF211C2E);
+    final Color heroSubtle = isDark ? const Color(0xFFC9C0DE) : const Color(0xFF6E6480);
+    final Color heroAccent = isDark ? const Color(0xFFA794FF) : const Color(0xFF6952D6);
 
-    return AppCard(
-      child: Row(
-        children: [
-          AppProgressRing(
-            percent: percent,
-            size: 110,
-            center: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('${(percent * 100).round()}%', style: theme.textTheme.headlineMedium),
-                Text('doing great!', style: theme.textTheme.bodySmall),
-              ],
-            ),
-          ),
-          const SizedBox(width: AppSpacing.lg),
-          Expanded(
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        ClipRRect(
+          borderRadius: const BorderRadius.vertical(bottom: Radius.circular(AppRadii.floating)),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, 56),
+            decoration: BoxDecoration(gradient: AppGradients.homeSkyFor(theme.brightness)),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text('Daily Progress', style: theme.textTheme.titleMedium),
-                _StatLine(
-                  icon: Icons.check_circle_outline_rounded,
-                  label: 'Tasks Done',
-                  value: tasksTotal == 0 ? '0 / 0' : '$tasksDone / $tasksTotal',
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('$greeting, $name', style: theme.textTheme.displaySmall?.copyWith(color: heroText)),
+                          const SizedBox(height: 2),
+                          Text("Let's make today amazing.", style: theme.textTheme.bodyMedium?.copyWith(color: heroSubtle)),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => GoRouter.of(context).push(RoutePaths.reminders),
+                      icon: Icon(Icons.notifications_none_rounded, color: heroText),
+                    ),
+                    GestureDetector(
+                      onTap: () => GoRouter.of(context).push(RoutePaths.profile),
+                      child: CircleAvatar(
+                        radius: 20,
+                        backgroundColor: isDark ? Colors.white.withValues(alpha: 0.14) : Colors.white.withValues(alpha: 0.6),
+                        child: Icon(Icons.person_rounded, color: heroText),
+                      ),
+                    ),
+                  ],
                 ),
-                _StatLine(icon: Icons.repeat_rounded, label: 'Habits Met', value: '$habitsMet / $habitsTotal'),
-                _StatLine(icon: Icons.timer_outlined, label: 'Focus Time', value: '—'),
+                const SizedBox(height: AppSpacing.xs),
+                const FlowMascot(size: 92),
               ],
             ),
           ),
-        ],
-      ),
+        ),
+        Positioned(
+          left: AppSpacing.lg,
+          right: AppSpacing.lg,
+          bottom: -56,
+          child: FloatingGlassCard(
+            child: Row(
+              children: [
+                AppProgressRing(
+                  percent: percent,
+                  size: 92,
+                  strokeWidth: 10,
+                  center: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '${(percent * 100).round()}%',
+                        style: AppTypography.tabular(size: 20, weight: FontWeight.w600, color: heroText),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text('Daily Progress', style: theme.textTheme.titleSmall?.copyWith(color: heroText)),
+                      _HeroStatLine(
+                        icon: Icons.check_circle_outline_rounded,
+                        label: 'Tasks',
+                        value: tasksTotal == 0 ? '0/0' : '$tasksDone/$tasksTotal',
+                        textColor: heroText,
+                        subtleColor: heroSubtle,
+                        accentColor: heroAccent,
+                      ),
+                      _HeroStatLine(
+                        icon: Icons.repeat_rounded,
+                        label: 'Habits',
+                        value: '$habitsMet/$habitsTotal',
+                        textColor: heroText,
+                        subtleColor: heroSubtle,
+                        accentColor: heroAccent,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
 
-class _StatLine extends StatelessWidget {
-  const _StatLine({required this.icon, required this.label, required this.value});
+class _HeroStatLine extends StatelessWidget {
+  const _HeroStatLine({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.textColor,
+    required this.subtleColor,
+    required this.accentColor,
+  });
 
   final IconData icon;
   final String label;
   final String value;
+  final Color textColor;
+  final Color subtleColor;
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: theme.colorScheme.primary),
+          Icon(icon, size: 15, color: accentColor),
           const SizedBox(width: 6),
-          Expanded(child: Text(label, style: theme.textTheme.bodySmall)),
-          Text(value, style: theme.textTheme.labelLarge),
+          Expanded(child: Text(label, style: TextStyle(fontFamily: 'Manrope', fontSize: 13, color: subtleColor))),
+          Text(value, style: AppTypography.tabular(size: 13, weight: FontWeight.w600, color: textColor)),
         ],
       ),
     );
@@ -221,6 +302,7 @@ class _TodayScheduleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return AppCard(
+      elevation: AppElevation.raised,
       onTap: () => GoRouter.of(context).push(RoutePaths.planner),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -268,6 +350,7 @@ class _HabitsPreviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return AppCard(
+      elevation: AppElevation.raised,
       onTap: () => GoRouter.of(context).push(RoutePaths.habits),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,6 +415,7 @@ class _MealPlanCard extends StatelessWidget {
     }
 
     return AppCard(
+      elevation: AppElevation.raised,
       onTap: () => GoRouter.of(context).push(RoutePaths.meals),
       child: Row(
         children: [
@@ -353,7 +437,7 @@ class _MealPlanCard extends StatelessWidget {
           Container(
             width: 56,
             height: 56,
-            decoration: BoxDecoration(color: semantic.categoryTealTint, borderRadius: BorderRadius.circular(AppRadii.md)),
+            decoration: BoxDecoration(color: semantic.categoryTealTint, borderRadius: BorderRadius.circular(AppRadii.resting)),
             child: Icon(slot.icon, color: semantic.categoryTeal),
           ),
         ],
@@ -377,6 +461,7 @@ class _BudgetTodayCard extends StatelessWidget {
     final percent = budgetTarget > 0 ? (spentToday / budgetTarget).clamp(0.0, 1.0).toDouble() : 0.0;
 
     return AppCard(
+      elevation: AppElevation.raised,
       onTap: () => GoRouter.of(context).push(RoutePaths.budget),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -394,8 +479,8 @@ class _BudgetTodayCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(formatCurrency(spentToday, currency), style: theme.textTheme.titleMedium),
-              Text(formatCurrency(budgetTarget, currency), style: theme.textTheme.titleMedium),
+              Text(formatCurrency(spentToday, currency), style: AppTypography.tabular(size: 18, weight: FontWeight.w600, color: theme.textTheme.titleMedium?.color)),
+              Text(formatCurrency(budgetTarget, currency), style: AppTypography.tabular(size: 18, weight: FontWeight.w600, color: theme.textTheme.titleMedium?.color)),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -418,11 +503,12 @@ class _AiCoachCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GradientHeroCard(
-      gradient: AppGradients.aiCoach,
+      gradient: AppGradients.primary,
       onTap: onTap,
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
       child: Row(
         children: [
-          const FlowMascot(size: 56),
+          const FlowMascot(size: 48),
           const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(

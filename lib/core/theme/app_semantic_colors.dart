@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 import 'app_colors.dart';
 
 /// Semantic colors Material 3's [ColorScheme] doesn't cover natively —
-/// success/warning states, income vs. expense, streaks, and XP —
+/// success/warning/error/info, income vs. expense, streaks, and XP —
 /// registered as a [ThemeExtension] so they animate/interpolate with theme
 /// changes like every other themed color.
+///
+/// Dark mode is its own hand-picked set of brightened accents (Meadow Glow,
+/// Ember Glow, Moon Violet, …), not the light-mode colors reused at reduced
+/// alpha over a dark background.
 @immutable
 class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
   const AppSemanticColors({
@@ -13,6 +17,10 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     required this.successTint,
     required this.warning,
     required this.warningTint,
+    required this.error,
+    required this.errorTint,
+    required this.info,
+    required this.infoTint,
     required this.income,
     required this.expense,
     required this.expenseTint,
@@ -34,6 +42,10 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
   final Color successTint;
   final Color warning;
   final Color warningTint;
+  final Color error;
+  final Color errorTint;
+  final Color info;
+  final Color infoTint;
   final Color income;
   final Color expense;
   final Color expenseTint;
@@ -55,6 +67,10 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     successTint: AppColors.successTint,
     warning: AppColors.warning,
     warningTint: AppColors.warningTint,
+    error: AppColors.error,
+    errorTint: AppColors.errorTint,
+    info: AppColors.info,
+    infoTint: AppColors.infoTint,
     income: AppColors.income,
     expense: AppColors.expense,
     expenseTint: AppColors.expenseTint,
@@ -73,25 +89,29 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
   );
 
   static final AppSemanticColors dark = AppSemanticColors(
-    success: AppColors.success,
-    successTint: AppColors.success.withValues(alpha: 0.16),
-    warning: AppColors.warning,
-    warningTint: AppColors.warning.withValues(alpha: 0.16),
-    income: AppColors.income,
-    expense: AppColors.expense,
-    expenseTint: AppColors.expense.withValues(alpha: 0.16),
-    streakFlame: AppColors.streakFlame,
-    streakFlameTint: AppColors.streakFlame.withValues(alpha: 0.18),
-    xpGold: AppColors.xpGold,
-    xpGoldTint: AppColors.xpGold.withValues(alpha: 0.18),
-    categoryPurple: AppColors.categoryPurple,
-    categoryPurpleTint: AppColors.categoryPurple.withValues(alpha: 0.18),
-    categoryBlue: AppColors.categoryBlue,
-    categoryBlueTint: AppColors.categoryBlue.withValues(alpha: 0.18),
-    categoryPink: AppColors.categoryPink,
-    categoryPinkTint: AppColors.categoryPink.withValues(alpha: 0.18),
-    categoryTeal: AppColors.categoryTeal,
-    categoryTealTint: AppColors.categoryTeal.withValues(alpha: 0.18),
+    success: AppColors.darkSuccess,
+    successTint: AppColors.darkSuccess.withValues(alpha: 0.16),
+    warning: AppColors.darkWarning,
+    warningTint: AppColors.darkWarning.withValues(alpha: 0.16),
+    error: AppColors.darkError,
+    errorTint: AppColors.darkError.withValues(alpha: 0.16),
+    info: AppColors.darkInfo,
+    infoTint: AppColors.darkInfo.withValues(alpha: 0.16),
+    income: AppColors.darkSuccess,
+    expense: AppColors.darkError,
+    expenseTint: AppColors.darkError.withValues(alpha: 0.16),
+    streakFlame: AppColors.darkStreakFlame,
+    streakFlameTint: AppColors.darkStreakFlame.withValues(alpha: 0.18),
+    xpGold: AppColors.darkXpGold,
+    xpGoldTint: AppColors.darkXpGold.withValues(alpha: 0.18),
+    categoryPurple: AppColors.darkCategoryPurple,
+    categoryPurpleTint: AppColors.darkCategoryPurple.withValues(alpha: 0.18),
+    categoryBlue: AppColors.darkCategoryBlue,
+    categoryBlueTint: AppColors.darkCategoryBlue.withValues(alpha: 0.18),
+    categoryPink: AppColors.darkCategoryPink,
+    categoryPinkTint: AppColors.darkCategoryPink.withValues(alpha: 0.18),
+    categoryTeal: AppColors.darkCategoryTeal,
+    categoryTealTint: AppColors.darkCategoryTeal.withValues(alpha: 0.18),
   );
 
   @override
@@ -100,6 +120,10 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     Color? successTint,
     Color? warning,
     Color? warningTint,
+    Color? error,
+    Color? errorTint,
+    Color? info,
+    Color? infoTint,
     Color? income,
     Color? expense,
     Color? expenseTint,
@@ -121,6 +145,10 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
       successTint: successTint ?? this.successTint,
       warning: warning ?? this.warning,
       warningTint: warningTint ?? this.warningTint,
+      error: error ?? this.error,
+      errorTint: errorTint ?? this.errorTint,
+      info: info ?? this.info,
+      infoTint: infoTint ?? this.infoTint,
       income: income ?? this.income,
       expense: expense ?? this.expense,
       expenseTint: expenseTint ?? this.expenseTint,
@@ -148,6 +176,10 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
       successTint: l(successTint, other.successTint),
       warning: l(warning, other.warning),
       warningTint: l(warningTint, other.warningTint),
+      error: l(error, other.error),
+      errorTint: l(errorTint, other.errorTint),
+      info: l(info, other.info),
+      infoTint: l(infoTint, other.infoTint),
       income: l(income, other.income),
       expense: l(expense, other.expense),
       expenseTint: l(expenseTint, other.expenseTint),

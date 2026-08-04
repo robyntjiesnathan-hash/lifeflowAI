@@ -22,6 +22,7 @@ class AppTheme {
       seedColor: AppColors.seed,
       brightness: brightness,
       surface: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+      error: isDark ? AppColors.darkError : AppColors.error,
     );
     final Color scaffoldBg = isDark ? AppColors.darkBackground : AppColors.lightBackground;
     final TextTheme textTheme = AppTypography.textTheme(brightness);
