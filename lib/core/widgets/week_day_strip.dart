@@ -13,6 +13,7 @@ class WeekDayStrip extends StatelessWidget {
     required this.selectedIndex,
     this.statuses,
     this.onSelect,
+    this.dotColor,
   });
 
   /// Short labels, e.g. ['M','T','W','T','F','S','S'] or day numbers.
@@ -20,6 +21,12 @@ class WeekDayStrip extends StatelessWidget {
   final int selectedIndex;
   final List<DayStatus>? statuses;
   final ValueChanged<int>? onSelect;
+
+  /// Color for a `DayStatus.complete`/`.partial` dot. Defaults to
+  /// `colorScheme.primary`; callers whose "complete" means something more
+  /// specific than "the brand color" (e.g. Habits' "you kept the streak" —
+  /// Meadow, the growth color) can override it.
+  final Color? dotColor;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +56,7 @@ class WeekDayStrip extends StatelessWidget {
                 ),
                 if (statuses != null) ...[
                   const SizedBox(height: AppSpacing.xs),
-                  _StatusDot(status: statuses![i]),
+                  _StatusDot(status: statuses![i], color: dotColor ?? theme.colorScheme.primary),
                 ],
               ],
             ),
@@ -60,26 +67,26 @@ class WeekDayStrip extends StatelessWidget {
 }
 
 class _StatusDot extends StatelessWidget {
-  const _StatusDot({required this.status});
+  const _StatusDot({required this.status, required this.color});
 
   final DayStatus status;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    Color color;
+    Color dotColor;
     switch (status) {
       case DayStatus.complete:
-        color = theme.colorScheme.primary;
+        dotColor = color;
       case DayStatus.partial:
-        color = theme.colorScheme.primary.withValues(alpha: 0.4);
+        dotColor = color.withValues(alpha: 0.4);
       case DayStatus.none:
-        color = Colors.transparent;
+        dotColor = Colors.transparent;
     }
     return Container(
       width: 6,
       height: 6,
-      decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+      decoration: BoxDecoration(shape: BoxShape.circle, color: dotColor),
     );
   }
 }

@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../core/theme/app_semantic_colors.dart';
+
 part 'task.freezed.dart';
 part 'task.g.dart';
 
@@ -51,17 +53,19 @@ abstract class Task with _$Task {
 }
 
 extension TaskPriorityX on TaskPriority {
-  /// Left-accent / badge color per priority, matching the reference
-  /// design's colored left-bar timeline cards.
+  /// Left-accent / badge color per priority, routed through the app's
+  /// named semantic tokens (Brick Rose/Honey/Meadow-teal) rather than
+  /// one-off hex values so priority colors stay in sync with the rest of
+  /// the palette.
   Color color(BuildContext context) {
-    final theme = Theme.of(context);
+    final semantic = context.semanticColors;
     switch (this) {
       case TaskPriority.high:
-        return theme.colorScheme.error;
+        return semantic.error;
       case TaskPriority.medium:
-        return const Color(0xFFF59E0B);
+        return semantic.warning;
       case TaskPriority.low:
-        return const Color(0xFF14B8A6);
+        return semantic.categoryTeal;
     }
   }
 

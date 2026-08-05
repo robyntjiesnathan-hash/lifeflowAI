@@ -5,7 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_segmented_control.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/loading_skeleton.dart';
@@ -68,6 +70,10 @@ class _PlannerScreenState extends ConsumerState<PlannerScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, 0),
+                child: _TodayProgressCapsule(tasks: tasks),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, 0),
                 child: AppSegmentedControl<_PlannerView>(
                   options: const [
                     (_PlannerView.day, 'Day'),
@@ -100,6 +106,39 @@ class _PlannerScreenState extends ConsumerState<PlannerScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Compact, always-visible "how's today going" readout above the
+/// Day/Week/Month switcher — independent of whichever date the view below
+/// happens to be showing.
+class _TodayProgressCapsule extends StatelessWidget {
+  const _TodayProgressCapsule({required this.tasks});
+
+  final List<Task> tasks;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final today = _dayOnly(DateTime.now());
+    final todaysTasks = tasks.where((t) => t.dueDate != null && _isSameDay(t.dueDate!, today)).toList();
+    final done = todaysTasks.where((t) => t.isDone).length;
+    final total = todaysTasks.length;
+
+    return AppCard(
+      elevation: AppElevation.raised,
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text("Today's tasks", style: theme.textTheme.titleSmall),
+          Text(
+            total == 0 ? '0/0 done' : '$done/$total done',
+            style: AppTypography.tabular(size: 15, weight: FontWeight.w600, color: theme.colorScheme.primary),
+          ),
+        ],
       ),
     );
   }

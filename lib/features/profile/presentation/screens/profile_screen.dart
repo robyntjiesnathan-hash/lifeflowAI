@@ -9,6 +9,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/theme_mode_provider.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_segmented_control.dart';
+import '../../../../core/widgets/badge_chip.dart';
 import '../../../../core/widgets/confirm_dialog.dart';
 import '../../../../core/widgets/loading_skeleton.dart';
 import '../../../../core/widgets/section_header.dart';
@@ -260,13 +261,7 @@ class _HighlightTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 36,
-            height: 36,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(color: tint, shape: BoxShape.circle),
-            child: Icon(icon, color: color, size: 18),
-          ),
+          CategoryIconChip(icon: icon, color: color, tint: tint, size: 36),
           const SizedBox(height: AppSpacing.sm),
           Text(title, style: theme.textTheme.labelLarge),
           const SizedBox(height: 2),

@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/xp_rules.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/badge_chip.dart';
 import '../../../../core/widgets/loading_skeleton.dart';
+import '../../../../core/widgets/progress_ring.dart';
 import '../../application/gamification_service.dart';
 
 /// Reusable card showing the current level, an XP progress bar toward the
@@ -37,47 +39,39 @@ class XpLevelCard extends ConsumerWidget {
         }
 
         return AppCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.12),
-                        child: Text(
-                          '${summary.level}',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Level ${summary.level}', style: theme.textTheme.titleMedium),
-                          Text('${summary.xp} XP total', style: theme.textTheme.bodySmall),
-                        ],
-                      ),
-                    ],
-                  ),
-                  if (summary.currentStreakDays > 0) BadgeChip.streak(summary.currentStreakDays),
-                ],
+              AppProgressRing(
+                percent: progress,
+                size: 68,
+                strokeWidth: 8,
+                center: Text(
+                  '${summary.level}',
+                  style: AppTypography.tabular(size: 20, weight: FontWeight.w800, color: theme.colorScheme.primary),
+                ),
               ),
-              const SizedBox(height: AppSpacing.md),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(AppRadii.pill),
-                child: LinearProgressIndicator(value: progress.clamp(0.0, 1.0), minHeight: 8),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                maxLevel ? 'Max level reached' : '${summary.xpToNextLevel} XP to level ${summary.level + 1}',
-                style: theme.textTheme.bodySmall,
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Level ${summary.level}', style: theme.textTheme.titleMedium),
+                        if (summary.currentStreakDays > 0) BadgeChip.streak(summary.currentStreakDays),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text('${summary.xp} XP total', style: theme.textTheme.bodySmall),
+                    const SizedBox(height: 4),
+                    Text(
+                      maxLevel ? 'Max level reached' : '${summary.xpToNextLevel} XP to level ${summary.level + 1}',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

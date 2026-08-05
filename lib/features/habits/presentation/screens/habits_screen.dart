@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/theme/app_semantic_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/empty_state.dart';
@@ -46,6 +48,7 @@ class HabitsScreen extends ConsumerWidget {
                 WeekDayStrip(
                   days: const ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
                   selectedIndex: now.weekday - 1,
+                  dotColor: context.semanticColors.success,
                   statuses: List.generate(7, (i) {
                     final day = monday.add(Duration(days: i));
                     if (day.isAfter(now)) return DayStatus.none;
@@ -54,6 +57,7 @@ class HabitsScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 AppCard(
+                  elevation: AppElevation.raised,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -64,7 +68,11 @@ class HabitsScreen extends ConsumerWidget {
                         error: (_, _) => const Text('—'),
                         data: (values) => Text(
                           '${values.isEmpty ? 0 : values.last.round()}%',
-                          style: Theme.of(context).textTheme.displaySmall,
+                          style: AppTypography.tabular(
+                            size: 30,
+                            weight: FontWeight.w700,
+                            color: Theme.of(context).textTheme.displaySmall?.color,
+                          ),
                         ),
                       ),
                       const SizedBox(height: AppSpacing.sm),

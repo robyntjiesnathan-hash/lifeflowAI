@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_semantic_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/badge_chip.dart';
@@ -16,6 +17,7 @@ class HabitCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final completeColor = context.semanticColors.success;
     return AppCard(
       onTap: onTap,
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
@@ -49,9 +51,9 @@ class HabitCard extends StatelessWidget {
               height: 30,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: completedToday ? theme.colorScheme.primary : Colors.transparent,
+                color: completedToday ? completeColor : Colors.transparent,
                 border: Border.all(
-                  color: completedToday ? theme.colorScheme.primary : theme.dividerColor,
+                  color: completedToday ? completeColor : theme.dividerColor,
                   width: 2,
                 ),
               ),
