@@ -95,7 +95,14 @@ class HomeScreen extends ConsumerWidget {
                 habits: habits,
                 todaysTasks: todaysTasks,
               ),
-              const SizedBox(height: AppSpacing.lg),
+              // The hero's floating Daily Progress card pokes 56px below the
+              // hero's own box (see _HeroScene's `bottom: -56`); this gap
+              // must clear that overflow or the next row paints on top of
+              // the card's bottom edge, hiding its rounded corner and stats.
+              // The gaps below are trimmed by the same 32px this grew by, so
+              // the AI Coach card lands where it was already tuned to clear
+              // the docked FAB.
+              const SizedBox(height: 56),
               Padding(
                 padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, 140),
                 child: Column(
@@ -108,9 +115,9 @@ class HomeScreen extends ConsumerWidget {
                         Expanded(child: _HabitsPreviewCard(habits: habits)),
                       ],
                     ),
-                    const SizedBox(height: AppSpacing.lg),
+                    const SizedBox(height: AppSpacing.md),
                     _MealPlanCard(mealPlanAsync: mealPlanAsync, recipesAsync: recipesAsync),
-                    const SizedBox(height: AppSpacing.lg),
+                    const SizedBox(height: AppSpacing.md),
                     _BudgetTodayCard(summaryAsync: budgetSummaryAsync, currency: currency),
                     const SizedBox(height: AppSpacing.sm),
                     _AiCoachCard(
@@ -505,7 +512,7 @@ class _AiCoachCard extends StatelessWidget {
     return GradientHeroCard(
       gradient: AppGradients.primary,
       onTap: onTap,
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
       child: Row(
         children: [
           const FlowMascot(size: 48),
