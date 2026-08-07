@@ -63,6 +63,11 @@ class AccountScreen extends ConsumerWidget {
                 style: OutlinedButton.styleFrom(
                   foregroundColor: theme.colorScheme.error,
                   side: BorderSide(color: theme.colorScheme.error),
+                  // Matches GradientPillButton's fully-rounded shape and
+                  // padding instead of Material's default rectangular
+                  // outlined-button chrome.
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadii.pill)),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 16),
                 ),
                 onPressed: () => _confirmDelete(context, ref),
                 icon: const Icon(Icons.delete_forever_rounded),

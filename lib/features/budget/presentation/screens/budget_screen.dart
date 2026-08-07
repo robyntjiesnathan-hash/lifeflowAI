@@ -18,6 +18,7 @@ import '../../domain/transaction.dart';
 import '../widgets/add_edit_transaction_sheet.dart';
 import '../widgets/category_spend_row.dart';
 import '../widgets/currency_picker_sheet.dart';
+import '../widgets/edit_budget_target_sheet.dart';
 
 class BudgetScreen extends ConsumerWidget {
   const BudgetScreen({super.key});
@@ -109,6 +110,7 @@ class _BudgetContent extends StatelessWidget {
             budgetTarget: budgetTarget,
             percent: spentPercent.toDouble(),
             currency: profile.currency,
+            onEditTarget: () => showEditBudgetTargetSheet(context, profile: profile),
           ),
           EmptyState(
             icon: Icons.account_balance_wallet_rounded,
@@ -129,6 +131,7 @@ class _BudgetContent extends StatelessWidget {
           budgetTarget: budgetTarget,
           percent: spentPercent.toDouble(),
           currency: profile.currency,
+          onEditTarget: () => showEditBudgetTargetSheet(context, profile: profile),
         ),
         const SizedBox(height: AppSpacing.lg),
         const SectionHeader(title: 'Categories'),
@@ -168,12 +171,14 @@ class _TotalSpentHeroCard extends StatelessWidget {
     required this.budgetTarget,
     required this.percent,
     required this.currency,
+    required this.onEditTarget,
   });
 
   final num totalSpent;
   final num budgetTarget;
   final double percent;
   final String currency;
+  final VoidCallback onEditTarget;
 
   @override
   Widget build(BuildContext context) {
@@ -189,9 +194,29 @@ class _TotalSpentHeroCard extends StatelessWidget {
             style: AppTypography.tabular(size: 32, weight: FontWeight.w800, color: Colors.white),
           ),
           const SizedBox(height: AppSpacing.sm),
-          Text(
-            '${(percent * 100).round()}% of ${formatCurrency(budgetTarget, currency)} budget',
-            style: AppTypography.tabular(size: 13, weight: FontWeight.w500, color: Colors.white70),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '${(percent * 100).round()}% of ${formatCurrency(budgetTarget, currency)} budget',
+                  style: AppTypography.tabular(size: 13, weight: FontWeight.w500, color: Colors.white70),
+                ),
+              ),
+              // Monthly budget defaulted to a flat 2000 with no way to
+              // change it anywhere in the app — this is the one visible
+              // "edit target" affordance, right where the target is shown.
+              GestureDetector(
+                onTap: onEditTarget,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Icon(Icons.edit_rounded, size: 13, color: Colors.white),
+                    SizedBox(width: 4),
+                    Text('Edit', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
+                  ],
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: AppSpacing.sm),
           ClipRRect(

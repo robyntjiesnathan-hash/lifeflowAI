@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_semantic_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/badge_chip.dart';
 import '../../../../core/widgets/confirm_dialog.dart';
@@ -97,7 +98,14 @@ class RecipeDetailScreen extends ConsumerWidget {
                         Icon(Icons.circle, size: 6, color: theme.dividerColor),
                         const SizedBox(width: AppSpacing.sm),
                         Expanded(child: Text(ingredient.name, style: theme.textTheme.bodyMedium)),
-                        Text(_formatQuantity(ingredient.quantity, ingredient.unit), style: theme.textTheme.bodySmall),
+                        Text(
+                          _formatQuantity(ingredient.quantity, ingredient.unit),
+                          style: AppTypography.tabular(
+                            size: theme.textTheme.bodySmall?.fontSize ?? 12,
+                            weight: FontWeight.w500,
+                            color: theme.textTheme.bodySmall?.color,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -121,7 +129,13 @@ class RecipeDetailScreen extends ConsumerWidget {
                           width: 22,
                           height: 22,
                           alignment: Alignment.center,
-                          decoration: BoxDecoration(shape: BoxShape.circle, color: color.withValues(alpha: 0.14)),
+                          // Rounded square rather than a circle, matching
+                          // CategoryIconChip's radius formula elsewhere in
+                          // the app instead of introducing a lone circle.
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(22 * 0.32),
+                            color: color.withValues(alpha: 0.14),
+                          ),
                           child: Text(
                             '${i + 1}',
                             style: theme.textTheme.labelSmall?.copyWith(color: color, fontWeight: FontWeight.w700),

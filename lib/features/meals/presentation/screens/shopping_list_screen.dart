@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_text_field.dart';
@@ -69,7 +70,14 @@ class ShoppingListScreen extends ConsumerWidget {
                                 ),
                               ),
                             ),
-                            Text(_formatQuantity(item), style: theme.textTheme.bodySmall),
+                            Text(
+                              _formatQuantity(item),
+                              style: AppTypography.tabular(
+                                size: theme.textTheme.bodySmall?.fontSize ?? 12,
+                                weight: FontWeight.w500,
+                                color: theme.textTheme.bodySmall?.color,
+                              ),
+                            ),
                             IconButton(
                               icon: const Icon(Icons.close_rounded, size: 18),
                               onPressed: () => ref.read(mealsControllerProvider.notifier).deleteShoppingListItem(item.id),

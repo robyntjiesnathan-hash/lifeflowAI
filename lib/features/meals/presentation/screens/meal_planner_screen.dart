@@ -33,8 +33,11 @@ class _MealPlannerScreenState extends ConsumerState<MealPlannerScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Meal Planner'),
+        // "This Week" used to sit here as a TextButton with an empty
+        // onPressed — a tap target that visibly did nothing. There's no
+        // week-navigation concept anywhere in the data layer (weekId is
+        // always DateTime.now()'s week), so removed rather than faked.
         actions: [
-          TextButton(onPressed: () {}, child: const Text('This Week')),
           IconButton(
             icon: const Icon(Icons.shopping_cart_outlined),
             onPressed: () => context.push(RoutePaths.mealsShoppingList),

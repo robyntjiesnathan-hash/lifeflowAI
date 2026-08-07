@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/theme/app_semantic_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/badge_chip.dart';
 import '../../application/auth_providers.dart';
 
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
@@ -50,7 +52,20 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       ? Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.mark_email_read_rounded, size: 48, color: Theme.of(context).colorScheme.primary),
+                            // The one moment of positive confirmation across
+                            // the auth flow — gave it real visual weight
+                            // instead of a bare, unweighted icon.
+                            Builder(
+                              builder: (context) {
+                                final semantic = context.semanticColors;
+                                return CategoryIconChip(
+                                  icon: Icons.mark_email_read_rounded,
+                                  color: semantic.success,
+                                  tint: semantic.successTint,
+                                  size: 72,
+                                );
+                              },
+                            ),
                             const SizedBox(height: AppSpacing.md),
                             Text(
                               'Check your inbox for a reset link.',
