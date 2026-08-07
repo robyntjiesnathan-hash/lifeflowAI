@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_gradients.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/loading_skeleton.dart';
@@ -132,6 +133,7 @@ class _BudgetContent extends StatelessWidget {
         const SizedBox(height: AppSpacing.lg),
         const SectionHeader(title: 'Categories'),
         AppCard(
+          elevation: AppElevation.raised,
           child: Column(
             children: [
               for (final category in categoriesWithSpend)
@@ -180,16 +182,16 @@ class _TotalSpentHeroCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Total Spent', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+          const Text('Total Spent', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white)),
           const SizedBox(height: AppSpacing.xs),
           Text(
             formatCurrency(totalSpent, currency),
-            style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w800),
+            style: AppTypography.tabular(size: 32, weight: FontWeight.w800, color: Colors.white),
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
             '${(percent * 100).round()}% of ${formatCurrency(budgetTarget, currency)} budget',
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+            style: AppTypography.tabular(size: 13, weight: FontWeight.w500, color: Colors.white70),
           ),
           const SizedBox(height: AppSpacing.sm),
           ClipRRect(

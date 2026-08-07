@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/services/local_notification_service.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_card.dart';
 import '../../application/user_profile_providers.dart';
 import '../../domain/user_profile.dart';
 
@@ -80,31 +81,44 @@ class NotificationsSettingsScreen extends ConsumerWidget {
           if (profile == null) return const Center(child: Text('Profile not found.'));
           final prefs = profile.notificationPrefs;
           return ListView(
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             children: [
-              SwitchListTile(
-                title: const Text('Daily summary'),
-                subtitle: const Text('A morning recap of your day ahead'),
-                value: prefs.dailySummary,
-                onChanged: (v) => _updatePrefs(ref, profile, prefs.copyWith(dailySummary: v)),
-              ),
-              SwitchListTile(
-                title: const Text('Habit reminders'),
-                subtitle: const Text('Nudges to keep your streaks alive'),
-                value: prefs.habitReminders,
-                onChanged: (v) => _updatePrefs(ref, profile, prefs.copyWith(habitReminders: v)),
-              ),
-              SwitchListTile(
-                title: const Text('Task reminders'),
-                subtitle: const Text('Alerts before scheduled tasks are due'),
-                value: prefs.taskReminders,
-                onChanged: (v) => _updatePrefs(ref, profile, prefs.copyWith(taskReminders: v)),
-              ),
-              ListTile(
-                title: const Text('Reminder time'),
-                subtitle: Text(prefs.reminderTime),
-                trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => _pickReminderTime(context, ref, profile),
+              // The one screen in the app with zero AppCard usage — bare
+              // SwitchListTiles with no grouping or elevation. Wrapped to
+              // match the settings-list pattern used on Profile.
+              AppCard(
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                child: Column(
+                  children: [
+                    SwitchListTile(
+                      title: const Text('Daily summary'),
+                      subtitle: const Text('A morning recap of your day ahead'),
+                      value: prefs.dailySummary,
+                      onChanged: (v) => _updatePrefs(ref, profile, prefs.copyWith(dailySummary: v)),
+                    ),
+                    const Divider(height: 1),
+                    SwitchListTile(
+                      title: const Text('Habit reminders'),
+                      subtitle: const Text('Nudges to keep your streaks alive'),
+                      value: prefs.habitReminders,
+                      onChanged: (v) => _updatePrefs(ref, profile, prefs.copyWith(habitReminders: v)),
+                    ),
+                    const Divider(height: 1),
+                    SwitchListTile(
+                      title: const Text('Task reminders'),
+                      subtitle: const Text('Alerts before scheduled tasks are due'),
+                      value: prefs.taskReminders,
+                      onChanged: (v) => _updatePrefs(ref, profile, prefs.copyWith(taskReminders: v)),
+                    ),
+                    const Divider(height: 1),
+                    ListTile(
+                      title: const Text('Reminder time'),
+                      subtitle: Text(prefs.reminderTime),
+                      trailing: const Icon(Icons.chevron_right_rounded),
+                      onTap: () => _pickReminderTime(context, ref, profile),
+                    ),
+                  ],
+                ),
               ),
             ],
           );

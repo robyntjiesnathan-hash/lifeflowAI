@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/theme/app_semantic_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_card.dart';
@@ -75,10 +76,21 @@ class _ReminderTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final semantic = context.semanticColors;
     return AppCard(
       onTap: () => showAddEditReminderSheet(context, existing: reminder),
       child: Row(
         children: [
+          // Every reminder row previously had zero leading visual — no icon
+          // chip at all, so the list had no visual anchor. Matches the same
+          // pink used for "Smart Reminders" on Profile.
+          CategoryIconChip(
+            icon: Icons.notifications_active_rounded,
+            color: semantic.categoryPink,
+            tint: semantic.categoryPinkTint,
+            size: 40,
+          ),
+          const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

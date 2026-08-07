@@ -3,9 +3,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_gradients.dart';
+import '../../../../core/theme/app_semantic_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_card.dart';
+import '../../../../core/widgets/badge_chip.dart';
 import '../../application/premium_providers.dart';
 
 const List<(String, IconData)> _premiumFeatures = [
@@ -92,32 +94,7 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
         const SizedBox(height: AppSpacing.lg),
         Text('Everything included', style: theme.textTheme.titleMedium),
         const SizedBox(height: AppSpacing.sm),
-        AppCard(
-          child: Column(
-            children: [
-              for (final feature in _premiumFeatures)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 32,
-                        height: 32,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(feature.$2, size: 16, color: theme.colorScheme.primary),
-                      ),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(child: Text(feature.$1, style: theme.textTheme.bodyMedium)),
-                    ],
-                  ),
-                ),
-            ],
-          ),
-        ),
+        _buildFeatureList(theme),
         const SizedBox(height: AppSpacing.xl),
         GradientPillButton(
           label: _purchasing ? 'Processing…' : 'Upgrade Now',
@@ -132,6 +109,48 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildFeatureList(ThemeData theme) {
+    final semantic = context.semanticColors;
+    // Each perk gets its own color instead of one repeated primary circle —
+    // six identical icon-in-a-circle rows was the exact "generic feature
+    // callout" pattern the design brief warns against, and gave the list
+    // zero visual differentiation.
+    final colors = [
+      semantic.categoryPurple,
+      semantic.categoryBlue,
+      semantic.success,
+      semantic.info,
+      semantic.categoryTeal,
+      semantic.categoryPink,
+    ];
+    final tints = [
+      semantic.categoryPurpleTint,
+      semantic.categoryBlueTint,
+      semantic.successTint,
+      semantic.infoTint,
+      semantic.categoryTealTint,
+      semantic.categoryPinkTint,
+    ];
+    return AppCard(
+      elevation: AppElevation.raised,
+      child: Column(
+        children: [
+          for (int i = 0; i < _premiumFeatures.length; i++)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+              child: Row(
+                children: [
+                  CategoryIconChip(icon: _premiumFeatures[i].$2, color: colors[i], tint: tints[i], size: 36),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(child: Text(_premiumFeatures[i].$1, style: theme.textTheme.bodyMedium)),
+                ],
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

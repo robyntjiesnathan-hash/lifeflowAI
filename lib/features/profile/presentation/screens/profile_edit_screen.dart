@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/theme/app_semantic_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/selectable_option_card.dart';
 import '../../application/user_profile_providers.dart';
 import '../../domain/user_profile.dart';
 
@@ -14,6 +16,16 @@ const Map<CoachingStyle, (String, IconData)> _coachingStyles = {
   CoachingStyle.analytical: ('Analytical', Icons.insights_rounded),
   CoachingStyle.playful: ('Playful', Icons.celebration_rounded),
 };
+
+/// Gives each coaching style its own color instead of every option reading
+/// as the same primary-tinted row — mirrors the same "stop repeating one
+/// color for every option" fix applied to Premium's feature list.
+Color _coachingStyleColor(CoachingStyle style, AppSemanticColors semantic) => switch (style) {
+      CoachingStyle.supportive => semantic.success,
+      CoachingStyle.direct => semantic.warning,
+      CoachingStyle.analytical => semantic.categoryBlue,
+      CoachingStyle.playful => semantic.categoryPink,
+    };
 
 const List<String> _ageRanges = ['<18', '18-24', '25-34', '35-44', '45-54', '55+'];
 
@@ -103,11 +115,12 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
               for (final entry in _coachingStyles.entries)
                 Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                  child: _CoachingStyleCard(
+                  child: SelectableOptionCard(
                     icon: entry.value.$2,
                     title: entry.value.$1,
                     selected: _coachingStyle == entry.key,
                     onTap: () => setState(() => _coachingStyle = entry.key),
+                    color: _coachingStyleColor(entry.key, context.semanticColors),
                   ),
                 ),
               const SizedBox(height: AppSpacing.lg),
@@ -118,40 +131,6 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
             ],
           );
         },
-      ),
-    );
-  }
-}
-
-class _CoachingStyleCard extends StatelessWidget {
-  const _CoachingStyleCard({required this.icon, required this.title, required this.selected, required this.onTap});
-
-  final IconData icon;
-  final String title;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return InkWell(
-      borderRadius: BorderRadius.circular(AppRadii.lg),
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        decoration: BoxDecoration(
-          color: selected ? theme.colorScheme.primary.withValues(alpha: 0.1) : theme.cardTheme.color,
-          borderRadius: BorderRadius.circular(AppRadii.lg),
-          border: Border.all(color: selected ? theme.colorScheme.primary : Colors.transparent, width: 1.5),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: theme.colorScheme.primary),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(child: Text(title, style: theme.textTheme.titleMedium)),
-            if (selected) Icon(Icons.check_circle_rounded, color: theme.colorScheme.primary),
-          ],
-        ),
       ),
     );
   }

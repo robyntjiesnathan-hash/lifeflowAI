@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/badge_chip.dart';
@@ -93,7 +94,22 @@ class _BillCard extends ConsumerWidget {
                 const SizedBox(height: 2),
                 Row(
                   children: [
-                    Text('Due day ${bill.dueDay} · ${formatCurrency(bill.amount, currency)}', style: theme.textTheme.bodySmall),
+                    Text.rich(
+                      TextSpan(
+                        style: theme.textTheme.bodySmall,
+                        children: [
+                          TextSpan(text: 'Due day ${bill.dueDay} · '),
+                          TextSpan(
+                            text: formatCurrency(bill.amount, currency),
+                            style: AppTypography.tabular(
+                              size: theme.textTheme.bodySmall?.fontSize ?? 12,
+                              weight: FontWeight.w600,
+                              color: theme.textTheme.bodySmall?.color,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     if (bill.isAutoPay) ...[
                       const SizedBox(width: AppSpacing.sm),
                       const BadgeChip(label: 'Auto-pay', icon: Icons.bolt_rounded),

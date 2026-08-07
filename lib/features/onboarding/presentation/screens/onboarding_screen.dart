@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/theme/app_semantic_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../core/widgets/selectable_option_card.dart';
 import '../../../../core/services/local_notification_service.dart';
 import '../../../profile/domain/user_profile.dart';
 import '../../application/onboarding_controller.dart';
+
+/// Gives each coaching style its own color instead of every option reading
+/// as the same primary-tinted row — mirrors the same "stop repeating one
+/// color for every option" fix applied to Premium's feature list. Kept in
+/// sync with the identical helper in profile_edit_screen.dart, which shows
+/// the same four styles post-onboarding.
+Color _coachingStyleColor(CoachingStyle style, AppSemanticColors semantic) => switch (style) {
+      CoachingStyle.supportive => semantic.success,
+      CoachingStyle.direct => semantic.warning,
+      CoachingStyle.analytical => semantic.categoryBlue,
+      CoachingStyle.playful => semantic.categoryPink,
+    };
 
 const _goalOptions = [
   'Be more productive',
@@ -317,64 +331,16 @@ class _CoachingStyleStep extends ConsumerWidget {
           for (final entry in _styles.entries)
             Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-              child: _StyleCard(
+              child: SelectableOptionCard(
                 icon: entry.value.$3,
                 title: entry.value.$1,
                 subtitle: entry.value.$2,
                 selected: draft.coachingStyle == entry.key,
                 onTap: () => notifier.update((d) => d.copyWith(coachingStyle: entry.key)),
+                color: _coachingStyleColor(entry.key, context.semanticColors),
               ),
             ),
         ],
-      ),
-    );
-  }
-}
-
-class _StyleCard extends StatelessWidget {
-  const _StyleCard({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return InkWell(
-      borderRadius: BorderRadius.circular(AppRadii.lg),
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        decoration: BoxDecoration(
-          color: selected ? theme.colorScheme.primary.withValues(alpha: 0.1) : theme.cardTheme.color,
-          borderRadius: BorderRadius.circular(AppRadii.lg),
-          border: Border.all(color: selected ? theme.colorScheme.primary : Colors.transparent, width: 1.5),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: theme.colorScheme.primary),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: theme.textTheme.titleMedium),
-                  Text(subtitle, style: theme.textTheme.bodySmall),
-                ],
-              ),
-            ),
-            if (selected) Icon(Icons.check_circle_rounded, color: theme.colorScheme.primary),
-          ],
-        ),
       ),
     );
   }
