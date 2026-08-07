@@ -99,9 +99,7 @@ class HomeScreen extends ConsumerWidget {
               // hero's own box (see _HeroScene's `bottom: -40`); this 56px
               // gap clears that overflow with a visible 16px to spare, so
               // the next row doesn't land flush against the card's bottom
-              // edge. The gaps below are trimmed by 32px versus the original
-              // 24px spacer, so the AI Coach card still lands where it was
-              // already tuned to clear the docked FAB.
+              // edge.
               const SizedBox(height: 56),
               Padding(
                 padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, 140),
@@ -115,9 +113,15 @@ class HomeScreen extends ConsumerWidget {
                         Expanded(child: _HabitsPreviewCard(habits: habits)),
                       ],
                     ),
-                    const SizedBox(height: AppSpacing.md),
+                    // Same gap (AppSpacing.sm) between every card in this
+                    // stack — including before the AI Coach card — so the
+                    // rhythm reads as consistent instead of the last gap
+                    // looking pinched relative to the others. Kept at sm
+                    // rather than md so the AI Coach card still clears the
+                    // docked FAB in the unscrolled viewport.
+                    const SizedBox(height: AppSpacing.sm),
                     _MealPlanCard(mealPlanAsync: mealPlanAsync, recipesAsync: recipesAsync),
-                    const SizedBox(height: AppSpacing.md),
+                    const SizedBox(height: AppSpacing.sm),
                     _BudgetTodayCard(summaryAsync: budgetSummaryAsync, currency: currency),
                     const SizedBox(height: AppSpacing.sm),
                     _AiCoachCard(
@@ -175,7 +179,7 @@ class _HeroScene extends StatelessWidget {
           borderRadius: const BorderRadius.vertical(bottom: Radius.circular(AppRadii.floating)),
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, 56),
+            padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, 88),
             decoration: BoxDecoration(gradient: AppGradients.homeSkyFor(theme.brightness)),
             child: Column(
               children: [
@@ -206,7 +210,11 @@ class _HeroScene extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: AppSpacing.xs),
-                const FlowMascot(size: 92),
+                // Sized down from 92 and given extra room below (hero bottom
+                // padding 56 -> 88) so its bottom edge clears the floating
+                // Daily Progress card's top edge instead of getting cut into
+                // by the card's glass blur.
+                const FlowMascot(size: 76),
               ],
             ),
           ),
