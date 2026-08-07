@@ -105,13 +105,18 @@ class HomeScreen extends ConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, 140),
                 child: Column(
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(child: _TodayScheduleCard(todaysTasks: todaysTasks)),
-                        const SizedBox(width: AppSpacing.md),
-                        Expanded(child: _HabitsPreviewCard(habits: habits)),
-                      ],
+                    // Stretch both cards to the same height (the taller of
+                    // the two) instead of each sizing to its own content, so
+                    // the pair reads as one uniform, matching set of boxes.
+                    IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(child: _TodayScheduleCard(todaysTasks: todaysTasks)),
+                          const SizedBox(width: AppSpacing.md),
+                          Expanded(child: _HabitsPreviewCard(habits: habits)),
+                        ],
+                      ),
                     ),
                     // Same gap (AppSpacing.sm) between every card in this
                     // stack — including before the AI Coach card — so the
