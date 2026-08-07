@@ -19,8 +19,16 @@ class SectionHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: theme.textTheme.titleMedium),
-          if (actionLabel != null)
+          Expanded(
+            child: Text(
+              title,
+              style: theme.textTheme.titleMedium,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (actionLabel != null) ...[
+            const SizedBox(width: AppSpacing.sm),
             GestureDetector(
               onTap: onAction,
               child: Text(
@@ -28,6 +36,7 @@ class SectionHeader extends StatelessWidget {
                 style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.primary),
               ),
             ),
+          ],
         ],
       ),
     );

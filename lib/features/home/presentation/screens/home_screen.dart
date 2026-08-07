@@ -95,13 +95,13 @@ class HomeScreen extends ConsumerWidget {
                 habits: habits,
                 todaysTasks: todaysTasks,
               ),
-              // The hero's floating Daily Progress card pokes 56px below the
-              // hero's own box (see _HeroScene's `bottom: -56`); this gap
-              // must clear that overflow or the next row paints on top of
-              // the card's bottom edge, hiding its rounded corner and stats.
-              // The gaps below are trimmed by the same 32px this grew by, so
-              // the AI Coach card lands where it was already tuned to clear
-              // the docked FAB.
+              // The hero's floating Daily Progress card pokes 40px below the
+              // hero's own box (see _HeroScene's `bottom: -40`); this 56px
+              // gap clears that overflow with a visible 16px to spare, so
+              // the next row doesn't land flush against the card's bottom
+              // edge. The gaps below are trimmed by 32px versus the original
+              // 24px spacer, so the AI Coach card still lands where it was
+              // already tuned to clear the docked FAB.
               const SizedBox(height: 56),
               Padding(
                 padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, 140),
@@ -214,7 +214,11 @@ class _HeroScene extends StatelessWidget {
         Positioned(
           left: AppSpacing.lg,
           right: AppSpacing.lg,
-          bottom: -56,
+          // Pulled up from -56 so the card's bottom edge sits a visible 16px
+          // above the Today's Schedule/Habits row below it (see the 56px
+          // spacer after _HeroScene in HomeScreen.build) instead of landing
+          // flush against it.
+          bottom: -40,
           child: FloatingGlassCard(
             child: Row(
               children: [
