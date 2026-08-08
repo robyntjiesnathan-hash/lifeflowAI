@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/route_paths.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/flow_mascot.dart';
 import '../../application/ai_coach_providers.dart';
+import '../../domain/ai_coach_exceptions.dart';
 import '../../domain/ai_message.dart';
 import '../widgets/chat_bubble.dart';
 import '../widgets/suggested_prompt_chip.dart';
@@ -75,6 +78,14 @@ class _AiCoachScreenState extends ConsumerState<AiCoachScreen> {
       if (mounted && usedId.isNotEmpty && usedId != _conversationId) {
         setState(() => _conversationId = usedId);
       }
+    } on AiCoachMessageLimitReached {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("You've reached the free limit of $kFreeMessageLimit messages with Flow."),
+          action: SnackBarAction(label: 'Upgrade', onPressed: () => context.push(RoutePaths.premium)),
+        ),
+      );
     } finally {
       if (mounted) setState(() => _sending = false);
       _scrollToBottom();

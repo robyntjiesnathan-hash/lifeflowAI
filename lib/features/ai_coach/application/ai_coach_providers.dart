@@ -6,9 +6,11 @@ import 'package:uuid/uuid.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/providers/firebase_providers.dart';
 import '../../auth/application/auth_providers.dart';
+import '../../premium/application/premium_providers.dart';
 import '../../profile/application/user_profile_providers.dart';
 import '../data/fake_ai_conversations_repository.dart';
 import '../data/firestore_ai_conversations_repository.dart';
+import '../domain/ai_coach_exceptions.dart';
 import '../domain/ai_conversation.dart';
 import '../domain/ai_conversations_repository.dart';
 import '../domain/ai_message.dart';
@@ -17,6 +19,13 @@ import 'ai_service_provider.dart';
 part 'ai_coach_providers.g.dart';
 
 const _uuid = Uuid();
+
+/// Free-tier cap backing the premium paywall's "Unlimited AI coaching
+/// conversations" claim — premium users bypass this entirely. Counted in
+/// total user-sent messages (not conversation count) since the UI never
+/// exposes a way to start more than one active conversation thread — a
+/// per-conversation cap would never actually be reachable.
+const int kFreeMessageLimit = 20;
 
 @Riverpod(keepAlive: true)
 AiConversationsRepository aiConversationsRepository(Ref ref) {
@@ -96,6 +105,23 @@ class AiCoachController extends _$AiCoachController {
     final uid = _uid;
     final repo = ref.read(aiConversationsRepositoryProvider);
     String id = conversationId ?? '';
+
+    // Enforced *before* the AsyncValue.guard below so it throws directly
+    // to the caller (screen shows an upgrade prompt) rather than being
+    // silently swallowed into an unwatched error state. Checked on every
+    // send (not just new-conversation creation) since counting messages
+    // is what's actually reachable through the UI — see kFreeMessageLimit.
+    if (!ref.read(isPremiumProvider)) {
+      final conversations = await repo.watchConversations(uid).first;
+      var sentCount = 0;
+      for (final conversation in conversations) {
+        final messages = await repo.watchMessages(uid, conversation.id).first;
+        sentCount += messages.where((m) => m.isUser).length;
+      }
+      if (sentCount >= kFreeMessageLimit) {
+        throw const AiCoachMessageLimitReached();
+      }
+    }
 
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {

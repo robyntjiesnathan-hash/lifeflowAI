@@ -10,13 +10,18 @@ import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/badge_chip.dart';
 import '../../application/premium_providers.dart';
 
+// Trimmed from 6 to 4 claims — "Export your data as PDF" and "Custom app
+// themes" had zero backing code anywhere (no pdf/printing dependency, no
+// theme-variant system beyond light/dark/system), and "Advanced analytics
+// & trends" was renamed to match what actually exists today (Budget's
+// category pie chart) rather than implying trend charts that don't exist.
+// "Unlimited AI coaching conversations" is now a real, enforced cap — see
+// kFreeMessageLimit in ai_coach_providers.dart.
 const List<(String, IconData)> _premiumFeatures = [
   ('Unlimited AI coaching conversations', Icons.chat_bubble_rounded),
-  ('Advanced analytics & trends', Icons.insights_rounded),
+  ('Spending breakdown & insights', Icons.insights_rounded),
   ('Unlimited goals & habits', Icons.track_changes_rounded),
   ('Automatic cloud backup', Icons.cloud_done_rounded),
-  ('Export your data as PDF', Icons.picture_as_pdf_rounded),
-  ('Custom app themes', Icons.palette_rounded),
 ];
 
 /// Paywall screen — shows the premium feature list and an "Upgrade Now" CTA
@@ -123,16 +128,12 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
       semantic.categoryBlue,
       semantic.success,
       semantic.info,
-      semantic.categoryTeal,
-      semantic.categoryPink,
     ];
     final tints = [
       semantic.categoryPurpleTint,
       semantic.categoryBlueTint,
       semantic.successTint,
       semantic.infoTint,
-      semantic.categoryTealTint,
-      semantic.categoryPinkTint,
     ];
     return AppCard(
       elevation: AppElevation.raised,
